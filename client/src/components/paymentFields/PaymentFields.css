@@ -1,0 +1,11 @@
+
+
+.paymentFields {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    padding: 5px;
+ /* Optional: Add a semi-transparent background for better readability */
+    margin: 5px;
+    border-radius: 10px;
+  }

@@ -1,0 +1,26 @@
+/* .blurryBackground {
+  position: relative;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: url('grid.png') center;
+  background-size: 800px;
+  filter: blur(3px);
+  z-index: -1;
+}
+
+h1{
+  position:absolute;
+  z-index: 1;
+} */
+
+.blurryBackground {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  background: url('grid1.png') center ;
+  filter: blur(4px);
+  background-size: 500px;
+  display: flex;
+  z-index: -1;
+}
