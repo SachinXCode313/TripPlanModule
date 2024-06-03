@@ -71,7 +71,19 @@ export default function TripItems() {
   };
 
   return (
-    <Paper sx={{ width: '1100px', overflow: 'hidden', mt:"100px"}}>
+    <Paper
+      sx={{ width: {
+        xs: '90%', // Set width to 100% for extra-small screens
+        sm: '80%',  // Set width to 80% for small screens
+        md: '70%',  // Set width to 70% for medium screens
+        lg: '60%',  // Set width to 60% for large screens
+        xl: '50%',  // Set width to 50% for extra-large screens
+      },
+      maxWidth: '1200px',
+
+      overflow: 'hidden',
+      mt: "100px" }
+      }>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
