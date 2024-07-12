@@ -27,8 +27,8 @@ function Navbar({ toggleDark, setToggleDark }) {
 
     const linkStyles = {
         textDecoration: 'none',
-        marginRight: theme.spacing(5),
-        fontSize: "20px",
+        marginRight: theme.spacing(9),
+        fontSize: "17px",
         fontWeight: '400',
         color: theme.palette.text.primary,
     };

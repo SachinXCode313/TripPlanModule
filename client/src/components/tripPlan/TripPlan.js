@@ -3,6 +3,7 @@ import { Box, Stack, Typography } from '@mui/material'
 import './TripPlan.css'
 import { useTheme } from '@emotion/react'
 import TripItems from './tripItems/TripItems'
+import { Button } from '@mui/material'
 
 const TripPlan = () => {
   const theme = useTheme()
@@ -28,14 +29,35 @@ const TripPlan = () => {
         bgcolor: 'primary.main',
         marginTop: theme.spacing(1),
         boxShadow: '10px 1px 15px rgba(0, 0, 0, 0.5)',
-        mx:'auto'
+        mx: 'auto'
       }}
     >
 
-      <Typography variant="h3" component="h2" sx={{ fontFamily: 'inherit', mt: "50px", fontWeight: "600", textAlign: 'center'}}>
+      <Typography variant="h3" component="h2" sx={{ fontFamily: 'inherit', mt: "50px", fontWeight: "600", textAlign: 'center' }}>
         Trip Plan
       </Typography>
       <TripItems />
+      <Box sx={{mt : "50px"}}>
+        <Button variant="contained"
+         sx={{
+          color: theme.palette.buttonText.primary,
+          backgroundColor: theme.palette.buttonBG.primary,
+          borderRadius: "20px" ,
+          mr: "30px",
+          '&:hover': {
+            backgroundColor: theme.palette.buttonBG.hover,
+          },
+          }}>Submit</Button>
+        <Button variant="contained" 
+        sx={{
+          color: theme.palette.buttonText.primary,
+          backgroundColor: theme.palette.buttonBG.primary,
+          borderRadius: "20px",
+          '&:hover': {
+            backgroundColor: theme.palette.buttonBG.hover,
+          },
+          }}>Clear</Button>
+      </Box>
     </Box>
   )
 }

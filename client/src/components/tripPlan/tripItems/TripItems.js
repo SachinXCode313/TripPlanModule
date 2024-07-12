@@ -5,33 +5,39 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, IconButton } from '@mui/material';
+import { useTheme } from '@emotion/react';
+
 
 const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-  {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
-  },
+  { id: 'action', label: 'Action', minWidth: 130 },
+  { id: 'sr', label: 'Sr.', minWidth: 70 },
+  { id: 'date', label: 'Date', minWidth: 150 },
+  { id: 'day', label: 'Day', minWidth: 100 },
+  { id: 'country', label: 'Country', minWidth: 170 },
+  { id: 'state', label: 'State', minWidth: 100 },
+  { id: 'city', label: 'City', minWidth: 100 },
+  { id: 'clientName', label: 'Client Name', minWidth: 100 },
+  { id: 'purpose', label: 'Purpose', minWidth: 100 },
+  { id: 'Remarks', label: 'Remarks', minWidth: 100 },
+  // {
+  //   id: 'population',
+  //   label: 'Population',
+  //   minWidth: 170,
+  //   align: 'right',
+  //   format: (value) => value.toLocaleString('en-US'),
+  // },
+
+  // {
+  //   id: 'density',
+  //   label: 'Density',
+  //   minWidth: 170,
+  //   align: 'right',
+  //   format: (value) => value.toFixed(2),
+  // },
 ];
 
 function createData(name, code, population, size) {
@@ -42,47 +48,26 @@ function createData(name, code, population, size) {
 const rows = [
   createData('India', 'IN', 1324171354, 3287263),
   createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
+  createData('China', 'CN', 1403500365, 9596961),
+
 ];
 
 export default function TripItems() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const theme = useTheme()
 
   return (
     <Paper
-      sx={{ width: {
-        xs: '90%', // Set width to 100% for extra-small screens
-        sm: '80%',  // Set width to 80% for small screens
-        md: '70%',  // Set width to 70% for medium screens
-        lg: '60%',  // Set width to 60% for large screens
-        xl: '50%',  // Set width to 50% for extra-large screens
-      },
-      maxWidth: '1200px',
-
-      overflow: 'hidden',
-      mt: "100px" }
+      sx={{
+        width: {
+          xs: '90%', // Set width to 100% for extra-small screens
+          sm: '80%',  // Set width to 80% for small screens
+          md: '70%',  // Set width to 70% for medium screens
+          lg: '60%',  // Set width to 60% for large screens
+          xl: '70%',  // Set width to 50% for extra-large screens
+        },
+        overflow: 'hidden',
+        mt: "100px"
+      }
       }>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
@@ -101,17 +86,25 @@ export default function TripItems() {
           </TableHead>
           <TableBody>
             {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
+                        <TableCell key={column.id} align={column.align} sx={{py:'3px'}}>
+                          {column.id === 'action'
+                            ? <>
+                              <IconButton >
+                                <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                              </IconButton>
+
+                              <IconButton >
+                                <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                              </IconButton>
+                            </>
+                            : "ranu"}
+
                         </TableCell>
                       );
                     })}
@@ -121,15 +114,7 @@ export default function TripItems() {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+
     </Paper>
   );
 }

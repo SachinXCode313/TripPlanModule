@@ -26,6 +26,16 @@ function App() {
       },
       inputText: {
         primary: toggleDark ? '#B9B9B9' : '#606060',
+      },
+      buttonText: {
+        primary: toggleDark ? '#000' : '#fff',
+      },
+      buttonBG: {
+        primary: toggleDark ? '#ebebeb' : '#171717',
+        hover: toggleDark ? '#c7c5c5' : '#333333',
+      },
+      bgColor: {
+        primary: toggleDark ? 'linear-gradient(90deg, #c8c8c833 1px, #fff0 0), linear-gradient(180deg, #c8c8c833 .1px, #fff0 0)' : 'linear-gradient(90deg, #0003 1px, #0000 0), linear-gradient(180deg, #0003 .1px, #0000 0)',
       }
     },
   })
@@ -36,9 +46,9 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Navbar toggleDark={toggleDark} setToggleDark={setToggleDark} />
-        <Background/>
-        <PaymentFields/>
-        <TripPlan/>
+        <Background />
+        <PaymentFields />
+        <TripPlan />
 
 
 
