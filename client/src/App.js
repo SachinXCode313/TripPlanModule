@@ -22,7 +22,7 @@ function App() {
         primary: toggleDark ? '#fff' : '#000', // Ensure text color changes accordingly
       },
       inputBorder: {
-        primary: toggleDark ? '#4A4A4A' : '#C2C2C2',
+        primary: toggleDark ? '#C4C4C4' : '#C2C2C2',
       },
       inputText: {
         primary: toggleDark ? '#B9B9B9' : '#606060',
@@ -35,8 +35,14 @@ function App() {
         hover: toggleDark ? '#c7c5c5' : '#333333',
       },
       bgColor: {
-        primary: toggleDark ? 'linear-gradient(90deg, #c8c8c833 1px, #fff0 0), linear-gradient(180deg, #c8c8c833 .1px, #fff0 0)' : 'linear-gradient(90deg, #0003 1px, #0000 0), linear-gradient(180deg, #0003 .1px, #0000 0)',
-      }
+        primary: toggleDark ? 'linear-gradient(90deg, #c8c8c833 1px, #fff0 0),linear-gradient(180deg, #c8c8c899 1px, #fff0 0)' : 'linear-gradient(90deg, #0003 1px, #0000 0), linear-gradient(180deg, #0003 1px, #0000 0)',
+      },
+      border: {
+        primary: toggleDark ? '#C4C4C4' : '#C4C4C4',
+      },
+      borderHover: {
+        primary: toggleDark ? 'black' : 'white',
+      },
     },
   })
 

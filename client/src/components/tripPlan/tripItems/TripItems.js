@@ -1,15 +1,16 @@
+
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button, IconButton } from '@mui/material';
 import { useTheme } from '@emotion/react';
+
 
 
 const columns = [
@@ -49,11 +50,17 @@ const rows = [
   createData('India', 'IN', 1324171354, 3287263),
   createData('China', 'CN', 1403500365, 9596961),
   createData('China', 'CN', 1403500365, 9596961),
+  createData('Canada', 'CA', 37602103, 9984670),
+  createData('Australia', 'AU', 25475400, 7692024),
+
 
 ];
 
+
+
 export default function TripItems() {
   const theme = useTheme()
+
 
   return (
     <Paper
@@ -66,12 +73,12 @@ export default function TripItems() {
           xl: '70%',  // Set width to 50% for extra-large screens
         },
         overflow: 'hidden',
-        mt: "100px"
+        mt: "60px"
       }
       }>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
-          <TableHead>
+          <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
             <TableRow>
               {columns.map((column) => (
                 <TableCell
@@ -83,7 +90,7 @@ export default function TripItems() {
                 </TableCell>
               ))}
             </TableRow>
-          </TableHead>
+          </thead>
           <TableBody>
             {rows
               .map((row) => {
@@ -92,7 +99,7 @@ export default function TripItems() {
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
-                        <TableCell key={column.id} align={column.align} sx={{py:'3px'}}>
+                        <TableCell key={column.id} align={column.align} sx={{ py: '3px' }}>
                           {column.id === 'action'
                             ? <>
                               <IconButton >
@@ -114,6 +121,7 @@ export default function TripItems() {
           </TableBody>
         </Table>
       </TableContainer>
+
 
     </Paper>
   );

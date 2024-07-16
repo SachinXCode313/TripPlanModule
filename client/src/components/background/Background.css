@@ -7,6 +7,6 @@
   margin: 0;
   padding: 0;
   background-size: 40px;
-  filter: blur(0.5px);
+  filter: blur(0.1px);
   z-index: -1;
 }

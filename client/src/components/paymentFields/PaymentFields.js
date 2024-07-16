@@ -2,23 +2,18 @@ import { Button, Toolbar } from "@mui/material"
 import * as React from 'react';
 import { useEffect } from "react";
 import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Chip from '@mui/material/Chip';
-import Checkbox from "@mui/material/Checkbox";
-import ListItemText from "@mui/material/ListItemText";
-import dayjs, { Dayjs } from 'dayjs';
-import TextField from '@mui/material/TextField';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import Stack from '@mui/material/Stack';
-import Autocomplete from '@mui/material/Autocomplete';
+import DatePicker from "react-multi-date-picker"
+import DatePanel from "react-multi-date-picker/plugins/date_panel"
+import "react-multi-date-picker/styles/backgrounds/bg-dark.css"
+import transition from "react-element-popper/animations/transition"
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
+import { IconButton, TextField, Select, ListItemText, Checkbox, FormControl, MenuItem, InputLabel, OutlinedInput } from "@mui/material";
+
+import DateObject from "react-date-object";
+
 import './PaymentFields.css'
+import MultiTrips from "./dateModule/MultiTrips";
+
 
 
 const ITEM_HEIGHT = 48;
@@ -31,6 +26,8 @@ const MenuProps = {
         },
     },
 };
+
+
 
 const names = [
     'Oliver Hansen',
@@ -52,8 +49,17 @@ function PaymentFields() {
     const [personName, setPersonName] = React.useState([]);
     const [personType, setPersonType] = React.useState('');
     const [personDept, setPersonDept] = React.useState();
+    const [open, setOpen] = React.useState(false);
+    const [dates, setDates] = React.useState([]);
 
+    // const [openEditDate, setOpenEditDate] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
+    const handleDateChange = (selectedDates) => {
+        setDates(selectedDates);
+        console.log('Selected dates:', selectedDates);
+    };
 
     const handleChangePerson = (event) => {
         const {
@@ -80,11 +86,6 @@ function PaymentFields() {
         setPersonDept(value);
     };
 
-    const [value, setValue] = React.useState(dayjs('2014-08-18T21:11:54'));
-
-    const handleChangeDate = (newValue) => {
-        setValue(newValue);
-    };
 
 
     useEffect(() => {
@@ -146,7 +147,7 @@ function PaymentFields() {
 
 
                     {/* Select Type */}
-                    <FormControl sx={{ m: 1, width: 220 }} size="small">
+                    <FormControl sx={{ m: 1, width: 300 }} size="small">
                         <InputLabel id="demo-multiple-chip-label"
                             sx={{
                                 "&.Mui-focused": {
@@ -180,7 +181,7 @@ function PaymentFields() {
 
 
                     {/* Select Dept */}
-                    <FormControl sx={{ m: 1, width: 400 }} size="small">
+                    <FormControl sx={{ m: 1, width: 300 }} size="small">
                         <InputLabel id="demo-multiple-chip-label"
                             sx={{
                                 "&.Mui-focused": {
@@ -221,7 +222,7 @@ function PaymentFields() {
                                     height: 45,  // adjust padding
                                 },
                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: theme.palette.text.primary, // Outline color on focus (click)
+                                    color: theme.palette.text.primary, // Outline color on focus (click)
                                 },
                                 '& .MuiOutlinedInput-root': {
                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
@@ -230,7 +231,9 @@ function PaymentFields() {
                                 },
                                 '& .MuiInputLabel-root': {
                                     color: theme.palette.text.primary, // Default label color
-
+                                    '&.Mui-focused': {
+                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                    },
                                 },
                             }}
                             variant="outlined"
@@ -238,21 +241,39 @@ function PaymentFields() {
 
                     )}
 
-
                     {/* Select Date */}
-                    <FormControl sx={{ m: 1, width: 400, }} size="small">
+                    <DatePicker
+                        value={dates}
+                        onChange={handleDateChange}
+                        format="MMMM DD YYYY"
+                        sort
+                        plugins={[
+                            <DatePanel />
+                        ]}
+                        placeholder="Select Date"
+                        style={{ // Adjust the size of the DatePicker
+                            height: "45px",
+                            borderRadius: "4px",
+                            fontSize: "16px",
+                            padding: "3px 12px",
+                            width: "400px",
+                            backgroundColor: "transparent",
+                            color: theme.palette.text.primary,
+                            borderWidth: "1px",
+                            borderStyle: "solid",
+                            zIndex: 1000,
 
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DesktopDatePicker
-                                label="Date desktop"
-                                inputFormat="MM/DD/YYYY"
-                                value={value}
-                                multiple
-                                onChange={handleChangeDate}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </LocalizationProvider>
-                    </FormControl>
+                        }}
+                        inputClass="custom-input"
+                        className="bg-dark"
+                        animations={[transition()]}
+                    />
+                    <IconButton onClick={handleOpen}>
+                        <EditCalendarIcon sx={{ color: theme.palette.buttonBG.primary, }} />
+                    </IconButton>
+                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={dates} />
+
+
                 </Toolbar >
             </div >
 
