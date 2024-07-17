@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Typography,
     Modal,
@@ -25,6 +25,8 @@ import CreateTripModal from './CreateTripModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@emotion/react';
+import axios from 'axios';
+
 
 const style = {
     width: 900,
@@ -38,7 +40,6 @@ const columns = [
     { id: 'action', label: 'Action', minWidth: 130 },
     { id: 'sr', label: 'Sr.', minWidth: 70 },
     { id: 'date', label: 'Date', minWidth: 100 },
-    { id: 'day', label: 'Day', minWidth: 100 },
     { id: 'country', label: 'Country', minWidth: 130 },
     { id: 'state', label: 'State', minWidth: 100 },
     { id: 'city', label: 'City', minWidth: 100 },
@@ -69,11 +70,12 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
     const [EditModalOpen, setEditModalOpen] = useState(false);
     const [openDate, setOpenDate] = useState();
     const [index, setIndex] = useState();
+    const [tripPlanList, setTripPlanList] = useState([]);
 
 
 
     const handleClick = (index, date) => {
-        setOpenDate(date)
+        setOpenDate(date.format("DD-MM-YYYY"))
         setIndex(index)
         setOpenDropdownIndex(index === openDropdownIndex ? null : index);
     };
@@ -87,10 +89,14 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
         return { name, calories, fat, carbs, protein };
     };
 
-    const rows = [
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-
-    ];
+    const handleTripPlanList = (formData) => {
+        const dateKey = openDate; // Format openDate correctly
+        const updatedTripPlanList = {
+            ...tripPlanList,
+            [dateKey]: [...(tripPlanList[dateKey] || []), formData]
+        };
+        setTripPlanList(updatedTripPlanList);
+    };
 
     return (
         <Modal
@@ -130,7 +136,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                                 <ListItemIcon onClick={handleEditModalOpen}>
                                     <AddCircleOutlineIcon />
                                 </ListItemIcon>
-                                <CreateTripModal open={EditModalOpen} handleClose={handleEditModalClose} dateCount={dateCount} day={index + 1} date={openDate} />
+                                <CreateTripModal open={EditModalOpen} handleClose={handleEditModalClose} dateCount={dateCount} day={index + 1} date={openDate} setTripPlanList={handleTripPlanList} />
                             </ListItemButton>
                             <Collapse in={index === openDropdownIndex} timeout="auto" unmountOnExit>
                                 <Box sx={{ p: 2, pt: 0.5 }}>
@@ -150,31 +156,27 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                                                 </TableRow>
                                             </thead>
                                             <TableBody>
-                                                {rows.map((row) => {
-                                                    return (
-                                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.Date }>
-                                                            {columns.map((column) => {
-                                                                const value = row[column.id];
-                                                                return (
-                                                                    <TableCell key={column.id} align={column.align} sx={{ py: '3px' }}>
-                                                                        {column.id === 'action'
-                                                                            ? <>
-                                                                                <IconButton >
-                                                                                    <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                                                                                </IconButton>
+                                                {tripPlanList[date.format("DD-MM-YYYY")] && tripPlanList[date.format("DD-MM-YYYY")].map((tripPlan, index) => (
+                                                    <TableRow hover key={index}>
+                                                        <TableCell>
+                                                            <IconButton >
+                                                                <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                                            </IconButton>
 
-                                                                                <IconButton >
-                                                                                    <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                                                                                </IconButton>
-                                                                            </>
-                                                                            : "ranu"}
-
-                                                                    </TableCell>
-                                                                );
-                                                            })}
-                                                        </TableRow>
-                                                    );
-                                                })}
+                                                            <IconButton >
+                                                                <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                        <TableCell>{index + 1}</TableCell>
+                                                        <TableCell>{date.format("DD-MM-YYYY")}</TableCell>
+                                                        <TableCell>{tripPlan.country}</TableCell>
+                                                        <TableCell>{tripPlan.state}</TableCell>
+                                                        <TableCell>{tripPlan.city}</TableCell>
+                                                        <TableCell>{tripPlan.clientName}</TableCell>
+                                                        <TableCell>{tripPlan.purpose}</TableCell>
+                                                        <TableCell>{tripPlan.remarks}</TableCell>
+                                                    </TableRow>
+                                                ))}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>

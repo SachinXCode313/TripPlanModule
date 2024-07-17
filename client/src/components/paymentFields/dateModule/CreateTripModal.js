@@ -1,16 +1,21 @@
-import * as React from 'react'
+import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import ListItemText from '@mui/material/ListItemText'
+import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField'
-import { IconButton, Select, Checkbox, FormControl, MenuItem, InputLabel, OutlinedInput } from "@mui/material";
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import { TextField } from '@mui/material';
 import { useTheme } from '@emotion/react';
+import { useEffect, useState } from 'react';
+import { City, Country, State } from 'country-state-city';
 import axios from 'axios';
-
+import { ElevenMp } from '@mui/icons-material';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -23,78 +28,128 @@ const MenuProps = {
     },
 };
 
-
-const CreateTripModal = ({ open, handleClose, date, day }) => {
+const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     const theme = useTheme();
     const [country, setCountry] = React.useState('');
     const [state, setState] = React.useState('');
-    const [city, setCity] = React.useState('');
-    const [clientName, setClientName] = React.useState('');
-    const [purpose, setPurpose] = React.useState('');
-    const [remarks, setRemarks] = React.useState('');
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
 
+    const [formData, setFormData] = React.useState({
+        country: '',
+        state: '',
+        city: '',
+        clientName: '',
+        purpose: '',
+        remarks: ''
+    });
 
-    // const fetchUsers = () => {
-    //     // Fetch users from your API or any data source
-    //     // Example API call:
-    //     axios.get('/api/get')
-    //         .then((res) => {
-    //             setUsersList(res.data)
-    //             console.log(typeof (usersList));
-    //         })
-    //         .catch(error => console.error('Error fetching users:', error));
-    // };
-
-    // useEffect(() => {
-    //     fetchUsers();
-    // }, [])
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const Data = {
-            country,
-            state,
-            city,
-            clientName,
-            purpose,
-            remarks,
+    useEffect(() => {
+        const getAllCountries = async () => {
+            try {
+                const countries = await Country.getAllCountries();
+                setCountries(countries)
+            } catch (err) {
+                console.log(err);
+            }
         };
-        console.log('Submitting form data:', Data);
-        try {
-            const res = await axios.post('/api/create', Data);
-            console.log('Data submitted successfully:', res.data);
-            handleClose(); // Close the modal after submission
-        } catch (error) {
-            console.error('Error submitting data:', error);
-        }
+        getAllCountries();
+    }, []);
+
+    useEffect(() => {
+        const getStates = async () => {
+            if (country.isoCode) {
+                const states = await State.getStatesOfCountry(country.isoCode);
+                setStates(states);
+            }
+        };
+        getStates();
+    }, [country]);
+
+    useEffect(() => {
+        const getCities = async () => {
+            if (state.isoCode) {
+                const cities = await City.getCitiesOfState(country.isoCode, state.isoCode);
+                setCities(cities);
+            }
+        };
+        getCities();
+    }, [state]);
+
+    const handleInputChange = (name) => (event) => {
+        setFormData({
+            ...formData,
+            [name]: event.target.value,
+        });
+    };
+
+    const handleChangeCountry = async (event) => {
+        const selectedCountry = event.target.value;
+        setCountry(selectedCountry)
+        setFormData({
+            ...formData,
+            country: selectedCountry.name,
+            state: '',
+            city: '',
+        });
+
+    };
+
+    const handleChangeState = async (event) => {
+        const selectedState = event.target.value;
+        setState(selectedState)
+        setFormData({
+            ...formData,
+            state: selectedState.name,
+            city: '',
+        });
     };
 
 
-    const handleChangeCountry = (event) => setCountry(event.target.value);
-    const handleChangeState = (event) => setState(event.target.value);
-    const handleChangeCity = (event) => setCity(event.target.value);
-    const handleClientName = (event) => setClientName(event.target.value);
-    const handlePurpose = (event) => setPurpose(event.target.value);
-    const handleRemarks = (event) => setRemarks(event.target.value);
+    // const handleClientName = (event) => setClientName(event.target.value);
+    // const handlePurpose = (event) => setPurpose(event.target.value);
+    // const handleRemarks = (event) => setRemarks(event.target.value);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevents the default form submission
+        setTripPlanList(formData);
 
+        // console.log(formData); // Log the form data
+        // setTripPlanList(formData)
+
+        // Reset states and cities
+        setCountry('')
+        setState('')
+
+        handleClose(); // Close the modal
+    };
+
+    const handleCancel = async (e) => {
+        e.preventDefault();
+        
+        setCountry('')
+        setState('')
+        handleClose();
+    }
 
     return (
-        <>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-
+        <Modal
+            open={open}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+            sx={{
+                '& .MuiBackdrop-root': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                },
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backdropFilter: 'blur(0.4px)',
+            }}
+        >
+            <Box
                 sx={{
-                    '& .MuiBackdrop-root': {
-                        backgroundColor: 'rgb(0,0,0,0.1)',
-                    },
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(0.4px)',
-                }}
-            >
-                <Box sx={{
                     mt: 5,
                     width: 600,
                     height: 320,
@@ -106,242 +161,279 @@ const CreateTripModal = ({ open, handleClose, date, day }) => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     p: 1,
-                }}>
-                    <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-                        <ListItemText primary={`Day ${day} ${date}`} />
-                    </Typography>
-                    
-                    <form onSubmit={handleSubmit}>
-                        <Box sx={{ flexGrow: 1, p: 2, mt: 1 }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    {/* Select Dept */}
-                                    <FormControl sx={{ width: 270 }} size="small">
-                                        <InputLabel id="demo-multiple-chip-label"
-                                            sx={{
-                                                "&.Mui-focused": {
-                                                    color: theme.palette.text.primary, // Change label color when focused
-                                                },
+                }}
+            >
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
+                    <ListItemText primary={`Day ${day} ${date}`} />
+                </Typography>
+
+                <form onSubmit={handleSubmit}>
+                    <Box sx={{ flexGrow: 1, p: 2, mt: 1 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <FormControl sx={{ width: 270 }} size="small">
+                                    <InputLabel
+                                        id="select-country-label"
+                                        sx={{
+                                            '&.Mui-focused': {
                                                 color: theme.palette.text.primary,
-                                            }}>Select Country</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            value={country}
-                                            onChange={handleChangeCountry}
-                                            input={<OutlinedInput id="select-dept" label="Select Country" sx={{
-                                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.text.primary,
-                                                },
-                                                height: "45px",
-                                            }}
+                                            },
+                                            color: theme.palette.text.primary,
+                                        }}
+                                    >
+                                        Select Country
+                                    </InputLabel>
+                                    <Select
+                                        labelId="select-country-label"
+                                        id="select-country"
+                                        value={country}
+                                        onChange={handleChangeCountry}
+                                        input={
+                                            <OutlinedInput
+                                                id="select-country-input"
+                                                label="Select Country"
+                                                sx={{
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: theme.palette.text.primary,
+                                                    },
+                                                    height: '45px',
+                                                }}
+                                            />
+                                        }
+                                        MenuProps={MenuProps}
 
-                                            />}
-                                            MenuProps={MenuProps}
-                                        >
-                                            <MenuItem value="Sales">Sales</MenuItem>
-                                            <MenuItem value="Operations">Operations</MenuItem>
-                                            <MenuItem value="Services">Services</MenuItem>
-                                        </Select>
+                                    >
+                                        {countries.map((country) => (
+                                            <MenuItem key={country.isoCode} value={country}>
+                                                {country.name}
+                                            </MenuItem>
+                                        ))}
 
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <FormControl sx={{ width: 270 }} size="small">
-                                        <InputLabel id="demo-multiple-chip-label"
-                                            sx={{
-                                                "&.Mui-focused": {
-                                                    color: theme.palette.text.primary, // Change label color when focused
-                                                },
-                                                color: theme.palette.text.primary,
-                                            }}>Select State</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            value={state}
-                                            onChange={handleChangeState}
-                                            input={<OutlinedInput id="select-dept" label="Select State" sx={{
-                                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.text.primary,
-                                                },
-                                                height: "45px",
-                                            }}
-
-                                            />}
-                                            MenuProps={MenuProps}
-                                        >
-                                            <MenuItem value="Sales">Sales</MenuItem>
-                                            <MenuItem value="Operations">Operations</MenuItem>
-                                            <MenuItem value="Services">Services</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <FormControl sx={{ width: 270 }} size="small">
-                                        <InputLabel id="demo-multiple-chip-label"
-                                            sx={{
-                                                "&.Mui-focused": {
-                                                    color: theme.palette.text.primary, // Change label color when focused
-                                                },
-                                                color: theme.palette.text.primary,
-                                            }}>Select City</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            value={city}
-                                            onChange={handleChangeCity}
-                                            input={<OutlinedInput id="select-dept" label="Select City" sx={{
-                                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.text.primary,
-                                                },
-                                                height: "45px",
-                                            }}
-
-                                            />}
-                                            MenuProps={MenuProps}
-                                        >
-                                            <MenuItem value="Sales">Sales</MenuItem>
-                                            <MenuItem value="Operations">Operations</MenuItem>
-                                            <MenuItem value="Services">Services</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <FormControl sx={{ width: 270 }} size="small">
-                                        <InputLabel id="demo-multiple-chip-label"
-                                            sx={{
-                                                "&.Mui-focused": {
-                                                    color: theme.palette.text.primary, // Change label color when focused
-                                                },
-                                                color: theme.palette.text.primary,
-                                            }}>Client Name</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            value={clientName}
-                                            onChange={handleClientName}
-                                            input={<OutlinedInput id="select-dept" label="Client Name" sx={{
-                                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.text.primary,
-                                                },
-                                                height: "45px",
-                                            }}
-
-                                            />}
-                                            MenuProps={MenuProps}
-                                        >
-                                            <MenuItem value="Sales">Sales</MenuItem>
-                                            <MenuItem value="Operations">Operations</MenuItem>
-                                            <MenuItem value="Services">Services</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    {/* Select Dept */}
-                                    <FormControl sx={{ width: 270 }} size="small">
-                                        <InputLabel id="demo-multiple-chip-label"
-                                            sx={{
-                                                "&.Mui-focused": {
-                                                    color: theme.palette.text.primary, // Change label color when focused
-                                                },
-                                                color: theme.palette.text.primary,
-                                            }}>Purpose</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            value={purpose}
-                                            onChange={handlePurpose}
-                                            input={<OutlinedInput id="select-dept" label="Purpose" sx={{
-                                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.text.primary,
-                                                },
-                                                height: "45px",
-                                            }}
-
-                                            />}
-                                            MenuProps={MenuProps}
-                                        >
-                                            <MenuItem value="Sales">Sales</MenuItem>
-                                            <MenuItem value="Operations">Operations</MenuItem>
-                                            <MenuItem value="Services">Services</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    {/* Select Dept */}
-                                    <FormControl sx={{ width: 270 }} size="small">
-                                        <InputLabel id="demo-multiple-chip-label"
-                                            sx={{
-                                                "&.Mui-focused": {
-                                                    color: theme.palette.text.primary, // Change label color when focused
-                                                },
-                                                color: theme.palette.text.primary,
-                                            }}>Remarks</InputLabel>
-                                        <Select
-                                            labelId="demo-multiple-checkbox-label"
-                                            id="demo-multiple-checkbox"
-                                            value={remarks}
-                                            onChange={handleRemarks}
-                                            input={<OutlinedInput id="select-dept" label="Remarks" sx={{
-                                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                    borderColor: theme.palette.text.primary,
-                                                },
-                                                height: "45px",
-                                            }}
-
-                                            />}
-                                            MenuProps={MenuProps}
-                                        >
-                                            <MenuItem value="Sales">Sales</MenuItem>
-                                            <MenuItem value="Operations">Operations</MenuItem>
-                                            <MenuItem value="Services">Services</MenuItem>
-                                        </Select>
-
-                                    </FormControl>
-                                </Grid>
-                                {/* Add more Grid items with TextField components as needed */}
+                                    </Select>
+                                </FormControl>
                             </Grid>
+                            <Grid item xs={6}>
+                                <FormControl sx={{ width: 270 }} size="small">
+                                    <InputLabel
+                                        id="select-state-label"
+                                        sx={{
+                                            '&.Mui-focused': {
+                                                color: theme.palette.text.primary,
+                                            },
+                                            color: theme.palette.text.primary,
+                                        }}
+                                    >
+                                        Select State
+                                    </InputLabel>
+                                    <Select
+                                        labelId="select-state-label"
+                                        id="select-state"
+                                        value={state}
+                                        onChange={handleChangeState}
+                                        input={
+                                            <OutlinedInput
+                                                id="select-state-input"
+                                                label="Select State"
+                                                sx={{
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: theme.palette.text.primary,
+                                                    },
+                                                    height: '45px',
+                                                }}
+                                            />
+                                        }
+                                        MenuProps={MenuProps}
+                                    >
+                                        {states.map((state) => (
+                                            <MenuItem key={state.isoCode} value={state}
+                                            >
+                                                {state.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl sx={{ width: 270 }} size="small">
+                                    <InputLabel
+                                        id="select-city-label"
+                                        sx={{
+                                            '&.Mui-focused': {
+                                                color: theme.palette.text.primary,
+                                            },
+                                            color: theme.palette.text.primary,
+                                        }}
+                                    >
+                                        Select City
+                                    </InputLabel>
+                                    <Select
+                                        labelId="select-city-label"
+                                        id="select-city"
+                                        value={formData.city}
+                                        onChange={handleInputChange('city')}
+                                        input={
+                                            <OutlinedInput
+                                                id="select-city-input"
+                                                label="Select City"
+                                                sx={{
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: theme.palette.text.primary,
+                                                    },
+                                                    height: '45px',
+                                                }}
+                                            />
+                                        }
+                                        MenuProps={MenuProps}
+                                    >
+                                        {cities.map((city) => (
+                                            <MenuItem key={city.name} value={city.name}>
+                                                {city.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl sx={{ width: 270 }} size="small">
+                                    <TextField
+                                        label="Client Name"
+                                        id="outlined-size-small"
+                                        value={formData.clientName}
+                                        onChange={handleInputChange('clientName')}
+                                        size="small"
+                                        sx={{
 
-                        </Box>
-                        <Box sx={{ mb: 2, }}>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    color: theme.palette.buttonText.primary,
-                                    backgroundColor: theme.palette.buttonBG.primary,
-                                    borderRadius: "20px",
-                                    '&:hover': {
-                                        backgroundColor: theme.palette.buttonBG.hover,
-                                    },
-                                    mr: 30
-                                }}
-                                onClick={handleClose}
-                            >Cancel</Button>
-                            <Button
-                                variant="contained"
-                                type="submit"
-                                sx={{
-                                    color: theme.palette.buttonText.primary,
-                                    backgroundColor: theme.palette.buttonBG.primary,
-                                    borderRadius: "20px",
-                                    ml: 15,
-                                    '&:hover': {
-                                        backgroundColor: theme.palette.buttonBG.hover,
-                                    },
+                                            '& .MuiInputBase-root': {  // styles for the input itself
+                                                height: 45,  // adjust padding
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                            },
+                                            '& .MuiOutlinedInput-root': {
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: theme.palette.text.primary, // Default label color
+                                                '&.Mui-focused': {
+                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                },
+                                            },
+                                        }}
+                                        variant="outlined"
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl sx={{ width: 270 }} size="small">
+                                    <TextField
+                                        label="Purpose"
+                                        id="outlined-size-small"
+                                        value={formData.purpose}
+                                        onChange={handleInputChange('purpose')}
+                                        size="small"
+                                        sx={{
 
-                                }}>Submit</Button>
+                                            '& .MuiInputBase-root': {  // styles for the input itself
+                                                height: 45,  // adjust padding
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                            },
+                                            '& .MuiOutlinedInput-root': {
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: theme.palette.text.primary, // Default label color
+                                                '&.Mui-focused': {
+                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                },
+                                            },
+                                        }}
+                                        variant="outlined"
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl sx={{ width: 270 }} size="small">
+                                    <TextField
+                                        label="Remarks"
+                                        id="outlined-size-small"
+                                        value={formData.remarks}
+                                        onChange={handleInputChange('remarks')}
+                                        size="small"
+                                        sx={{
 
-                        </Box>
-                    </form>
-                </Box>
+                                            '& .MuiInputBase-root': {  // styles for the input itself
+                                                height: 45,  // adjust padding
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                            },
+                                            '& .MuiOutlinedInput-root': {
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: theme.palette.text.primary, // Default label color
+                                                '&.Mui-focused': {
+                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                },
+                                            },
+                                        }}
+                                        variant="outlined"
+                                    />
+                                </FormControl>
+                            </Grid>
+                            {/* Add more Grid items with TextField components as needed */}
+                        </Grid>
+                    </Box>
+                    <Box sx={{
+                        mb: 2, ml: 25, display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    }}>
+                        <Button
+                            variant="contained"
+                            type="submit"
+                            sx={{
+                                color: theme.palette.buttonText.primary,
+                                backgroundColor: theme.palette.buttonBG.primary,
+                                borderRadius: '20px',
 
-            </Modal>
-        </>
-    )
-}
+                                '&:hover': {
+                                    backgroundColor: theme.palette.buttonBG.hover,
+                                },
+                                mr: 2,
+                            }}
+                        >
+                            Submit
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                color: theme.palette.buttonText.primary,
+                                backgroundColor: theme.palette.buttonBG.primary,
+                                borderRadius: '20px',
+                                '&:hover': {
+                                    backgroundColor: theme.palette.buttonBG.hover,
+                                },
 
-export default CreateTripModal
+                            }}
+                            onClick={handleCancel}
+                        >
+                            Cancel
+                        </Button>
+
+                    </Box>
+                </form>
+            </Box>
+        </Modal>
+    );
+};
+
+export default CreateTripModal;
