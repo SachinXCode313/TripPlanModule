@@ -89,7 +89,8 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         setCountry(selectedCountry)
         setFormData({
             ...formData,
-            date:date,
+            day: day,
+            date: date,
             country: selectedCountry.name,
             state: '',
             city: '',

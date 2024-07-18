@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Box } from '@mui/material';
 import { useTheme } from '@emotion/react';
 
 
@@ -52,77 +52,106 @@ const rows = [
   createData('China', 'CN', 1403500365, 9596961),
   createData('Canada', 'CA', 37602103, 9984670),
   createData('Australia', 'AU', 25475400, 7692024),
-
-
 ];
 
 
 
-export default function TripItems() {
+const TripItems = ({ tripPlanData }) => {
   const theme = useTheme()
 
+  const handleSubmit= () => {
+    console.log(tripPlanData)
+  }
 
   return (
-    <Paper
-      sx={{
-        width: {
-          xs: '90%', // Set width to 100% for extra-small screens
-          sm: '80%',  // Set width to 80% for small screens
-          md: '70%',  // Set width to 70% for medium screens
-          lg: '60%',  // Set width to 60% for large screens
-          xl: '70%',  // Set width to 50% for extra-large screens
-        },
-        overflow: 'hidden',
-        mt: "60px"
-      }
-      }>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </thead>
-          <TableBody>
-            {rows
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align} sx={{ py: '3px' }}>
-                          {column.id === 'action'
-                            ? <>
-                              <IconButton >
-                                <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                              </IconButton>
 
-                              <IconButton >
-                                <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                              </IconButton>
-                            </>
-                            : "ranu"}
+    <>
+      <Paper
+        sx={{
+          width: {
+            xs: '90%', // Set width to 100% for extra-small screens
+            sm: '80%',  // Set width to 80% for small screens
+            md: '70%',  // Set width to 70% for medium screens
+            lg: '60%',  // Set width to 60% for large screens
+            xl: '70%',  // Set width to 50% for extra-large screens
+          },
+          overflow: 'hidden',
+          mt: "60px"
+        }
+        }>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </thead>
+            <TableBody>
+              {rows
+                .map((row) => {
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align} sx={{ py: '3px' }}>
+                            {column.id === 'action'
+                              ? <>
+                                <IconButton >
+                                  <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                </IconButton>
 
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                                <IconButton >
+                                  <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                </IconButton>
+                              </>
+                              : "ranu"}
+
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
 
-    </Paper>
+      </Paper>
+      <Box sx={{ mt: "50px" }}>
+        <Button variant="contained"
+        onClick={handleSubmit}
+          sx={{
+            color: theme.palette.buttonText.primary,
+            backgroundColor: theme.palette.buttonBG.primary,
+            borderRadius: "20px",
+            mr: "30px",
+            '&:hover': {
+              backgroundColor: theme.palette.buttonBG.hover,
+            },
+          }}>Submit</Button>
+        <Button variant="contained"
+          sx={{
+            color: theme.palette.buttonText.primary,
+            backgroundColor: theme.palette.buttonBG.primary,
+            borderRadius: "20px",
+            '&:hover': {
+              backgroundColor: theme.palette.buttonBG.hover,
+            },
+          }}>Clear</Button>
+      </Box>
+
+    </>
   );
 }
+
+export default TripItems;

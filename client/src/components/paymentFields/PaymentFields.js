@@ -13,6 +13,7 @@ import DateObject from "react-date-object";
 
 import './PaymentFields.css'
 import MultiTrips from "./dateModule/MultiTrips";
+import TripPlan from "../tripPlan/TripPlan";
 
 
 
@@ -43,7 +44,7 @@ const names = [
 ];
 
 
-function PaymentFields() {
+const PaymentFields= () => {
 
     const theme = useTheme();
     const [personName, setPersonName] = React.useState([]);
@@ -52,6 +53,7 @@ function PaymentFields() {
     const [open, setOpen] = React.useState(false);
     const [dates, setDates] = React.useState([]);
     const [structuredDates,setStructuredDates] = React.useState([])
+    const [tripPlanList,setTripPlanList] = React.useState()
 
     // const [openEditDate, setOpenEditDate] = React.useState(false);
     const handleOpen = () => {
@@ -82,6 +84,11 @@ function PaymentFields() {
             setPersonType("Group")
         }
     };
+
+    const handleTripPlanList = (value) => {
+        setTripPlanList(value)
+        console.log(value);
+    }
 
 
     const handleChangeType = (event) => {
@@ -280,12 +287,11 @@ function PaymentFields() {
                     <IconButton onClick={handleOpen}>
                         <EditCalendarIcon sx={{ color: theme.palette.buttonBG.primary, }} />
                     </IconButton>
-                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={structuredDates} />
-
+                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={structuredDates} getTripPlanList={handleTripPlanList}/>
 
                 </Toolbar >
             </div >
-
+            <TripPlan tripPlanList={tripPlanList}/>
         </>
     )
 }

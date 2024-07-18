@@ -34,7 +34,7 @@ const columns = [
     { id: 'remarks', label: 'Remarks', minWidth: 100 },
 ];
 
-const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
+const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>{
     const theme = useTheme();
 
     const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
@@ -58,10 +58,26 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
     };
 
     const handleTripPlanList = (formData) => {
-        setTripPlanList(prevList => [...prevList, formData]);
+        // Generate sr number based on existing trip plans for the specific date
+        const tripPlansForDate = tripPlanList.filter(trip => trip.date === formData.date);
+        const sr = tripPlansForDate.length + 1;
+
+        // Add sr to formData
+        const updatedFormData = { ...formData, sr, day: formData.day };
+
+        setTripPlanList(prevList => [...prevList, updatedFormData]);
         console.log(tripPlanList);
+
+
+        // setTripPlanList(prevList => [...prevList, formData]);
+        // console.log(tripPlanList);
     };
 
+    const handleSave = () => {
+        getTripPlanList(tripPlanList);
+        handleClose();
+        
+    }
     return (
         <Modal
             open={open}
@@ -92,7 +108,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                         <Accordion
                             expanded={expanded === index}
                             onChange={() => setExpanded(expanded === index ? false : index)}
-                            key={index}
+                            key={obj.date}
 
 
                         >
@@ -138,28 +154,28 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                                                 </TableRow>
                                             </thead>
                                             <TableBody>
-                                                {tripPlanList.map((tripPlan, index) => (
-                                                    // Check if the tripPlan's date matches obj.date
-                                                    tripPlan.date === obj.date &&
-                                                    <TableRow hover key={index}>
-                                                        <TableCell>
-                                                            <IconButton>
-                                                                <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                                                            </IconButton>
-                                                            <IconButton>
-                                                                <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                                                            </IconButton>
-                                                        </TableCell>
-                                                        <TableCell>{index + 1}</TableCell>
-                                                        <TableCell>{tripPlan.date}</TableCell>
-                                                        <TableCell>{tripPlan.country}</TableCell>
-                                                        <TableCell>{tripPlan.state}</TableCell>
-                                                        <TableCell>{tripPlan.city}</TableCell>
-                                                        <TableCell>{tripPlan.clientName}</TableCell>
-                                                        <TableCell>{tripPlan.purpose}</TableCell>
-                                                        <TableCell>{tripPlan.remarks}</TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                {tripPlanList
+                                                    .filter(tripPlan => tripPlan.date === obj.date)
+                                                    .map((tripPlan, index) => (
+                                                        <TableRow hover key={index}>
+                                                            <TableCell>
+                                                                <IconButton>
+                                                                    <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                                                </IconButton>
+                                                                <IconButton>
+                                                                    <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                                                </IconButton>
+                                                            </TableCell>
+                                                            <TableCell>{tripPlan.sr}</TableCell>
+                                                            <TableCell>{tripPlan.date}</TableCell>
+                                                            <TableCell>{tripPlan.country}</TableCell>
+                                                            <TableCell>{tripPlan.state}</TableCell>
+                                                            <TableCell>{tripPlan.city}</TableCell>
+                                                            <TableCell>{tripPlan.clientName}</TableCell>
+                                                            <TableCell>{tripPlan.purpose}</TableCell>
+                                                            <TableCell>{tripPlan.remarks}</TableCell>
+                                                        </TableRow>
+                                                    ))}
                                             </TableBody>
 
                                         </Table>
@@ -173,6 +189,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                 </Box>
                 <Box sx={{ mb: 2 }}>
                     <Button variant="contained"
+                        onClick={handleSave}
                         sx={{
                             color: theme.palette.buttonText.primary,
                             backgroundColor: theme.palette.buttonBG.primary,
@@ -184,6 +201,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                             mr: 2
                         }}>Save</Button>
                     <Button variant="contained"
+                        onClick={handleClose}
                         sx={{
                             color: theme.palette.buttonText.primary,
                             backgroundColor: theme.palette.buttonBG.primary,
@@ -192,7 +210,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                             '&:hover': {
                                 backgroundColor: theme.palette.buttonBG.hover,
                             },
-                        }}>Clear</Button>
+                        }}>Cancel</Button>
                 </Box>
 
             </Box>
