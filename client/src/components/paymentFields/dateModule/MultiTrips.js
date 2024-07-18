@@ -3,38 +3,24 @@ import {
     Typography,
     Modal,
     Box,
-    ListSubheader,
-    List,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Collapse,
     Table,
     TableBody,
     TableCell,
     TableContainer,
-    TableHead,
     TableRow,
     Paper,
     IconButton,
-    Button,
 } from '@mui/material';
-import { DateRangeSharp, ExpandLess, ExpandMore, Inbox } from '@mui/icons-material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CreateTripModal from './CreateTripModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
 import { useTheme } from '@emotion/react';
-import axios from 'axios';
-
-
-const style = {
-    width: 900,
-    bgcolor: 'background.paper',
-    border: '1px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
 
 const columns = [
     { id: 'action', label: 'Action', minWidth: 130 },
@@ -45,64 +31,42 @@ const columns = [
     { id: 'city', label: 'City', minWidth: 100 },
     { id: 'clientName', label: 'Client Name', minWidth: 100 },
     { id: 'purpose', label: 'Purpose', minWidth: 100 },
-    { id: 'Remarks', label: 'Remarks', minWidth: 100 },
-    // {
-    //   id: 'population',
-    //   label: 'Population',
-    //   minWidth: 170,
-    //   align: 'right',
-    //   format: (value) => value.toLocaleString('en-US'),
-    // },
-
-    // {
-    //   id: 'density',
-    //   label: 'Density',
-    //   minWidth: 170,
-    //   align: 'right',
-    //   format: (value) => value.toFixed(2),
-    // },
+    { id: 'remarks', label: 'Remarks', minWidth: 100 },
 ];
-
 
 const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
     const theme = useTheme();
+
     const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
-    const [EditModalOpen, setEditModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [openDate, setOpenDate] = useState();
-    const [index, setIndex] = useState();
+    const [openDay, setOpenDay] = useState();
+    const [expanded, setExpanded] = useState(false);
+
     const [tripPlanList, setTripPlanList] = useState([]);
 
-
-
-    const handleClick = (index, date) => {
-        setOpenDate(date.format("DD-MM-YYYY"))
-        setIndex(index)
-        setOpenDropdownIndex(index === openDropdownIndex ? null : index);
+    const handleEditModalOpen = (day, date, index) => {
+        setEditModalOpen(true);
+        setOpenDropdownIndex(index);
+        setOpenDay(day);
+        setOpenDate(date);
+        setExpanded(index);
     };
 
-    const handleEditModalOpen = () => setEditModalOpen(true);
-
-
-    const handleEditModalClose = () => setEditModalOpen(false);
-
-    const createData = (name, calories, fat, carbs, protein) => {
-        return { name, calories, fat, carbs, protein };
+    const handleEditModalClose = () => {
+        setEditModalOpen(false);
     };
 
     const handleTripPlanList = (formData) => {
-        const dateKey = openDate; // Format openDate correctly
-        const updatedTripPlanList = {
-            ...tripPlanList,
-            [dateKey]: [...(tripPlanList[dateKey] || []), formData]
-        };
-        setTripPlanList(updatedTripPlanList);
+        setTripPlanList(prevList => [...prevList, formData]);
+        console.log(tripPlanList);
     };
 
     return (
         <Modal
             open={open}
             onClose={handleClose}
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(0.7px)', }}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(0.7px)' }}
         >
             <Box
                 sx={{
@@ -124,25 +88,43 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                     Plan For {dateCount} Days
                 </Typography>
                 <Box sx={{ height: 600, width: 1100 }}>
+                    {dates.map((obj, index) => (
+                        <Accordion
+                            expanded={expanded === index}
+                            onChange={() => setExpanded(expanded === index ? false : index)}
+                            key={index}
 
-                    {dates.map((date, index) => (
-                        <List
-                            sx={{ width: '100%', maxWidth: 1100, bgcolor: 'background.paper', boxShadow: 2, borderRadius: 5, my: 0.5 }}
-                            component="nav"
+
                         >
-                            <ListItemButton onClick={() => handleClick(index, date)}>
-                                <ListItemText key={index} primary={`Day ${index + 1}  ${date.format("DD-MM-YYYY")}`} />
-
-                                <ListItemIcon onClick={handleEditModalOpen}>
+                            <AccordionSummary
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                                sx={{ pt: 0, display: 'flex', alignItems: 'center', }}
+                            >
+                                <Typography variant="h6" sx={{ fontWeight: 'normal', flexGrow: 1 }}>
+                                    {`Day-${obj.day}  ${obj.date}`}
+                                </Typography>
+                                <IconButton
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleEditModalOpen(obj.day, obj.date, index);
+                                    }}
+                                >
                                     <AddCircleOutlineIcon />
-                                </ListItemIcon>
-                                <CreateTripModal open={EditModalOpen} handleClose={handleEditModalClose} dateCount={dateCount} day={index + 1} date={openDate} setTripPlanList={handleTripPlanList} />
-                            </ListItemButton>
-                            <Collapse in={index === openDropdownIndex} timeout="auto" unmountOnExit>
-                                <Box sx={{ p: 2, pt: 0.5 }}>
+                                </IconButton>
+                                <CreateTripModal
+                                    open={editModalOpen}
+                                    handleClose={handleEditModalClose}
+                                    day={openDay}
+                                    date={openDate}
+                                    setTripPlanList={handleTripPlanList}
+                                />
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Box sx={{ p: 1, pt: 0 }}>
                                     <TableContainer component={Paper}>
                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                            <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
+                                            <thead sx={{ backgroundColor: theme.palette.primary.main }}>
                                                 <TableRow>
                                                     {columns.map((column) => (
                                                         <TableCell
@@ -156,19 +138,20 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                                                 </TableRow>
                                             </thead>
                                             <TableBody>
-                                                {tripPlanList[date.format("DD-MM-YYYY")] && tripPlanList[date.format("DD-MM-YYYY")].map((tripPlan, index) => (
+                                                {tripPlanList.map((tripPlan, index) => (
+                                                    // Check if the tripPlan's date matches obj.date
+                                                    tripPlan.date === obj.date &&
                                                     <TableRow hover key={index}>
                                                         <TableCell>
-                                                            <IconButton >
+                                                            <IconButton>
                                                                 <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
                                                             </IconButton>
-
-                                                            <IconButton >
+                                                            <IconButton>
                                                                 <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
                                                             </IconButton>
                                                         </TableCell>
                                                         <TableCell>{index + 1}</TableCell>
-                                                        <TableCell>{date.format("DD-MM-YYYY")}</TableCell>
+                                                        <TableCell>{tripPlan.date}</TableCell>
                                                         <TableCell>{tripPlan.country}</TableCell>
                                                         <TableCell>{tripPlan.state}</TableCell>
                                                         <TableCell>{tripPlan.city}</TableCell>
@@ -178,15 +161,17 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
+
                                         </Table>
                                     </TableContainer>
                                 </Box>
-                            </Collapse>
-                        </List>
-                    ))}
-                </Box>
+                            </AccordionDetails>
+                        </Accordion>
 
-                <Box sx={{ mb: 2, }}>
+                    ))}
+
+                </Box>
+                <Box sx={{ mb: 2 }}>
                     <Button variant="contained"
                         sx={{
                             color: theme.palette.buttonText.primary,
@@ -207,12 +192,11 @@ const MultiTrips = ({ open, handleClose, dateCount, dates }) => {
                             '&:hover': {
                                 backgroundColor: theme.palette.buttonBG.hover,
                             },
-
                         }}>Clear</Button>
-
                 </Box>
+
             </Box>
-        </Modal >
+        </Modal>
     );
 };
 

@@ -35,8 +35,8 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
-
     const [formData, setFormData] = React.useState({
+        date,
         country: '',
         state: '',
         city: '',
@@ -89,11 +89,11 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         setCountry(selectedCountry)
         setFormData({
             ...formData,
+            date:date,
             country: selectedCountry.name,
             state: '',
             city: '',
         });
-
     };
 
     const handleChangeState = async (event) => {
@@ -121,16 +121,18 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         // Reset states and cities
         setCountry('')
         setState('')
-
+        console.log(formData)
+        console.log(date)
         handleClose(); // Close the modal
     };
 
     const handleCancel = async (e) => {
         e.preventDefault();
-        
+
         setCountry('')
         setState('')
         handleClose();
+
     }
 
     return (
@@ -147,6 +149,7 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                 justifyContent: 'center',
                 backdropFilter: 'blur(0.4px)',
             }}
+            keepMounted
         >
             <Box
                 sx={{

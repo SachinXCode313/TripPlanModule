@@ -51,9 +51,18 @@ function PaymentFields() {
     const [personDept, setPersonDept] = React.useState();
     const [open, setOpen] = React.useState(false);
     const [dates, setDates] = React.useState([]);
+    const [structuredDates,setStructuredDates] = React.useState([])
 
     // const [openEditDate, setOpenEditDate] = React.useState(false);
-    const handleOpen = () => setOpen(true);
+    const handleOpen = () => {
+        const structuredDates = dates.map((date, index) => ({
+            day: index + 1,
+            date: date.format("DD-MM-YYYY")
+        }));
+        setStructuredDates(structuredDates);
+        setOpen(true);
+        console.log(structuredDates);
+    }
     const handleClose = () => setOpen(false);
 
     const handleDateChange = (selectedDates) => {
@@ -271,7 +280,7 @@ function PaymentFields() {
                     <IconButton onClick={handleOpen}>
                         <EditCalendarIcon sx={{ color: theme.palette.buttonBG.primary, }} />
                     </IconButton>
-                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={dates} />
+                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={structuredDates} />
 
 
                 </Toolbar >
