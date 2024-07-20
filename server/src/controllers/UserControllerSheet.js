@@ -50,21 +50,23 @@ const getTripPlan = async (req, res) => {
 //Create Users Data
 const createTripPlan = async (req, res) => {
   try {
+    const { lastPlanId } = await getLastData();
+    // Initialize planId and sr based on last data
+    let planId = lastPlanId + 1;
 
-    const { lastPlanId, lastSr } = await getLastData();
-    // Increment sr and generate new planId
-    const planId = lastPlanId + 1;
-    const sr = lastSr + 1;
+    const rows = req.body.map((entry) => {
+      const { sr, date, day, country, state, city, clientName, purpose, remarks } = entry;
+      return [planId, sr, date, day, country, state, city, clientName, purpose, remarks];
+    });
 
-    const { date, country, state, city, clientName, purpose, remarks, deleted } = req.body;
 
     const addRows = await googleSheets.spreadsheets.values.append({
       auth,
       spreadsheetId,
-      range: "Sheet1!A:J",
+      range: "Sheet1!A:K",
       valueInputOption: "USER_ENTERED",
       resource: {
-        values: [[planId, sr, date, country, state, city, clientName, purpose, remarks, deleted]],
+        values: rows,
       },
     });
 
@@ -97,4 +99,70 @@ const updateTripPlan = async (req, res) => {
   }
 };
 
-export { getTripPlan, createTripPlan, updateTripPlan };
+//Get Users Data
+const getEmployee = async (req, res) => {
+  const getRows = await googleSheets.spreadsheets.values.get({
+    auth,
+    spreadsheetId,
+    range: "Sheet2",
+    // range: "Sheet2!A2:B",
+  });
+  const values = getRows.data.values.slice(1);
+
+  res.send(values);
+  console.log(values)
+};
+
+const deletePlan = async (req, res) => {
+  try {
+    const { sr, date } = req.body;
+    const srString = sr.toString();
+
+    console.log(req.body)
+    console.log(srString, date)
+    const getRows = await googleSheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId,
+      range: 'Sheet1!A:K', // Adjust range according to your sheet
+    });
+
+    const rows = getRows.data.values;
+    // Step 2: Find the row with matching sr and date
+    const dataRows = rows.slice(1);
+    console.log(dataRows)
+    // Step 2: Find the row with matching sr and date
+    let rowIndex = -1;
+    for (let i = 0; i < dataRows.length; i++) {
+      const [currentPlanId, currentSr, currentDate] = dataRows[i];
+      console.log(`Checking row ${i + 1}: sr=${currentSr}, date=${currentDate}`);
+      if (currentSr === srString && currentDate === date) {
+        rowIndex = i + 1; // Adjust index to account for the header row and 1-based index
+        break;
+      }
+    }
+
+
+    if (rowIndex === -1) {
+      return res.status(404).send('Row not found');
+    }
+
+    // Step 3: Mark as deleted
+    const range = `Sheet1!K${rowIndex + 1}`; // Adjust column if necessary
+    const update = await googleSheets.spreadsheets.values.update({
+      auth,
+      spreadsheetId,
+      range: range,
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        values: [['Deleted']], // Mark as deleted
+      },
+    });
+
+    res.status(200).send('Cell updated successfully');
+  } catch (error) {
+    console.error('Error updating cell in Google Sheets:', error);
+    res.status(500).send('An error occurred while updating the cell.');
+  }
+};
+
+export { getTripPlan, createTripPlan, updateTripPlan, getEmployee, deletePlan };

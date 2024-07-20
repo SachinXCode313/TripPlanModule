@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -12,10 +11,7 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { TextField } from '@mui/material';
 import { useTheme } from '@emotion/react';
-import { useEffect, useState } from 'react';
 import { City, Country, State } from 'country-state-city';
-import axios from 'axios';
-import { ElevenMp } from '@mui/icons-material';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -28,15 +24,13 @@ const MenuProps = {
     },
 };
 
-const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
+const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index }) => {
     const theme = useTheme();
-    const [country, setCountry] = React.useState('');
-    const [state, setState] = React.useState('');
-    const [countries, setCountries] = useState([]);
-    const [states, setStates] = useState([]);
-    const [cities, setCities] = useState([]);
+    const [countries, setCountries] = React.useState([]);
+    const [states, setStates] = React.useState([]);
+    const [cities, setCities] = React.useState([]);
     const [formData, setFormData] = React.useState({
-        date,
+        date: '',
         country: '',
         state: '',
         city: '',
@@ -44,102 +38,102 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         purpose: '',
         remarks: '',
         countryCode: '',
-        stateCode:'',
-        
+        stateCode: '',
     });
 
-    useEffect(() => {
-        const getAllCountries = async () => {
+    React.useEffect(() => {
+        const fetchCountries = async () => {
             try {
                 const countries = await Country.getAllCountries();
-                setCountries(countries)
+                setCountries(countries);
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         };
-        getAllCountries();
+        fetchCountries();
     }, []);
 
-    useEffect(() => {
-        const getStates = async () => {
-            if (country.isoCode) {
-                const states = await State.getStatesOfCountry(country.isoCode);
-                setStates(states);
+    React.useEffect(() => {
+        const fetchStates = async () => {
+            if (formData.countryCode) {
+                try {
+                    const states = await State.getStatesOfCountry(formData.countryCode);
+                    setStates(states);
+                } catch (err) {
+                    console.error(err);
+                }
             }
         };
-        getStates();
-    }, [country]);
+        fetchStates();
+    }, [formData.countryCode]);
 
-    useEffect(() => {
-        const getCities = async () => {
-            if (state.isoCode) {
-                const cities = await City.getCitiesOfState(country.isoCode, state.isoCode);
-                setCities(cities);
+    React.useEffect(() => {
+        const fetchCities = async () => {
+            if (formData.stateCode) {
+                try {
+                    const cities = await City.getCitiesOfState(formData.countryCode, formData.stateCode);
+                    setCities(cities);
+                } catch (err) {
+                    console.error(err);
+                }
             }
         };
-        getCities();
-    }, [state]);
+        fetchCities();
+    }, [formData.stateCode]);
 
-    const handleInputChange = (name) => (event) => {
-        setFormData({
-            ...formData,
-            [name]: event.target.value,
-        });
+    React.useEffect(() => {
+        if (initialData[index]) {
+            const data = initialData[index];
+            setFormData({
+                date: data.date,
+                country: data.country,
+                state: data.state,
+                city: data.city,
+                clientName: data.clientName,
+                purpose: data.purpose,
+                remarks: data.remarks,
+                countryCode: data.countryCode,
+                stateCode: data.stateCode,
+            });
+        }
+    }, [initialData, index]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+        }));
+        if (name === 'country') {
+            const countryCode = countries.find(c => c.name === value)?.isoCode || '';
+            setFormData(prev => ({
+                ...prev,
+                state: '',
+                city: '',
+                countryCode,
+            }));
+        }
+        if (name === 'state') {
+            const stateCode = states.find(s => s.name === value)?.isoCode || '';
+            setFormData(prev => ({
+                ...prev,
+                city: '',
+                stateCode,
+            }));
+        }
     };
 
-    const handleChangeCountry = async (event) => {
-        const selectedCountry = event.target.value;
-        setCountry(selectedCountry)
-        setFormData({
-            ...formData,
-            day: day,
-            date: date,
-            country: selectedCountry.name,
-            countryCode:selectedCountry.isoCode,
-            state: '',
-            city: '',
-        });
-    };
-
-    const handleChangeState = async (event) => {
-        const selectedState = event.target.value;
-        setState(selectedState)
-        setFormData({
-            ...formData,
-            state: selectedState.name,
-            stateCode:selectedState.isoCode,
-            city: '',
-        });
-    };
-
-
-    // const handleClientName = (event) => setClientName(event.target.value);
-    // const handlePurpose = (event) => setPurpose(event.target.value);
-    // const handleRemarks = (event) => setRemarks(event.target.value);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevents the default form submission
-        setTripPlanList(formData);
-
-        // console.log(formData); // Log the form data
-        // setTripPlanList(formData)
-
-        // Reset states and cities
-        setCountry('')
-        setState('')
-        console.log(formData)
-        console.log(date)
-        handleClose(); // Close the modal
-    };
-
-    const handleCancel = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('Submitting formData:', formData);
+        setTripPlanList(formData, index);
 
-        setCountry('')
-        setState('')
         handleClose();
+    };
 
-    }
+    const handleCancel = () => {
+        handleClose();
+    };
 
     return (
         <Modal
@@ -173,7 +167,7 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                 }}
             >
                 <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
-                    <ListItemText primary={`Day ${day} ${date}`} />
+                    Edit Trip
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
@@ -195,8 +189,9 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     <Select
                                         labelId="select-country-label"
                                         id="select-country"
-                                        value={country}
-                                        onChange={handleChangeCountry}
+                                        name="country"
+                                        value={formData.country}
+                                        onChange={handleInputChange}
                                         input={
                                             <OutlinedInput
                                                 id="select-country-input"
@@ -210,14 +205,12 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                             />
                                         }
                                         MenuProps={MenuProps}
-
                                     >
                                         {countries.map((country) => (
-                                            <MenuItem key={country.isoCode} value={country}>
+                                            <MenuItem key={country.isoCode} value={country.name}>
                                                 {country.name}
                                             </MenuItem>
                                         ))}
-
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -237,8 +230,9 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     <Select
                                         labelId="select-state-label"
                                         id="select-state"
-                                        value={state}
-                                        onChange={handleChangeState}
+                                        name="state"
+                                        value={formData.state}
+                                        onChange={handleInputChange}
                                         input={
                                             <OutlinedInput
                                                 id="select-state-input"
@@ -254,8 +248,7 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                         MenuProps={MenuProps}
                                     >
                                         {states.map((state) => (
-                                            <MenuItem key={state.isoCode} value={state}
-                                            >
+                                            <MenuItem key={state.isoCode} value={state.name}>
                                                 {state.name}
                                             </MenuItem>
                                         ))}
@@ -278,8 +271,9 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     <Select
                                         labelId="select-city-label"
                                         id="select-city"
+                                        name="city"
                                         value={formData.city}
-                                        onChange={handleInputChange('city')}
+                                        onChange={handleInputChange}
                                         input={
                                             <OutlinedInput
                                                 id="select-city-input"
@@ -306,27 +300,26 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                 <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Client Name"
-                                        id="outlined-size-small"
+                                        name="clientName"
                                         value={formData.clientName}
-                                        onChange={handleInputChange('clientName')}
+                                        onChange={handleInputChange}
                                         size="small"
                                         sx={{
-
-                                            '& .MuiInputBase-root': {  // styles for the input itself
-                                                height: 45,  // adjust padding
+                                            '& .MuiInputBase-root': {
+                                                height: 45,
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                                color: theme.palette.text.primary,
                                             },
                                             '& .MuiOutlinedInput-root': {
                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                    borderColor: theme.palette.text.primary,
                                                 },
                                             },
                                             '& .MuiInputLabel-root': {
-                                                color: theme.palette.text.primary, // Default label color
+                                                color: theme.palette.text.primary,
                                                 '&.Mui-focused': {
-                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                    color: theme.palette.text.primary,
                                                 },
                                             },
                                         }}
@@ -338,27 +331,26 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                 <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Purpose"
-                                        id="outlined-size-small"
+                                        name="purpose"
                                         value={formData.purpose}
-                                        onChange={handleInputChange('purpose')}
+                                        onChange={handleInputChange}
                                         size="small"
                                         sx={{
-
-                                            '& .MuiInputBase-root': {  // styles for the input itself
-                                                height: 45,  // adjust padding
+                                            '& .MuiInputBase-root': {
+                                                height: 45,
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                                color: theme.palette.text.primary,
                                             },
                                             '& .MuiOutlinedInput-root': {
                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                    borderColor: theme.palette.text.primary,
                                                 },
                                             },
                                             '& .MuiInputLabel-root': {
-                                                color: theme.palette.text.primary, // Default label color
+                                                color: theme.palette.text.primary,
                                                 '&.Mui-focused': {
-                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                    color: theme.palette.text.primary,
                                                 },
                                             },
                                         }}
@@ -370,27 +362,26 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                 <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Remarks"
-                                        id="outlined-size-small"
+                                        name="remarks"
                                         value={formData.remarks}
-                                        onChange={handleInputChange('remarks')}
+                                        onChange={handleInputChange}
                                         size="small"
                                         sx={{
-
-                                            '& .MuiInputBase-root': {  // styles for the input itself
-                                                height: 45,  // adjust padding
+                                            '& .MuiInputBase-root': {
+                                                height: 45,
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                                color: theme.palette.text.primary,
                                             },
                                             '& .MuiOutlinedInput-root': {
                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                    borderColor: theme.palette.text.primary,
                                                 },
                                             },
                                             '& .MuiInputLabel-root': {
-                                                color: theme.palette.text.primary, // Default label color
+                                                color: theme.palette.text.primary,
                                                 '&.Mui-focused': {
-                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                    color: theme.palette.text.primary,
                                                 },
                                             },
                                         }}
@@ -398,7 +389,6 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     />
                                 </FormControl>
                             </Grid>
-                            {/* Add more Grid items with TextField components as needed */}
                         </Grid>
                     </Box>
                     <Box sx={{
@@ -413,14 +403,13 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                 color: theme.palette.buttonText.primary,
                                 backgroundColor: theme.palette.buttonBG.primary,
                                 borderRadius: '20px',
-
                                 '&:hover': {
                                     backgroundColor: theme.palette.buttonBG.hover,
                                 },
                                 mr: 2,
                             }}
                         >
-                            Submit
+                            Update
                         </Button>
                         <Button
                             variant="contained"
@@ -431,13 +420,11 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                 '&:hover': {
                                     backgroundColor: theme.palette.buttonBG.hover,
                                 },
-
                             }}
                             onClick={handleCancel}
                         >
                             Cancel
                         </Button>
-
                     </Box>
                 </form>
             </Box>
@@ -445,4 +432,4 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     );
 };
 
-export default CreateTripModal;
+export default EditTripModal;

@@ -8,7 +8,7 @@ import "react-multi-date-picker/styles/backgrounds/bg-dark.css"
 import transition from "react-element-popper/animations/transition"
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import { IconButton, TextField, Select, ListItemText, Checkbox, FormControl, MenuItem, InputLabel, OutlinedInput } from "@mui/material";
-
+import axios from "axios";
 import DateObject from "react-date-object";
 
 import './PaymentFields.css'
@@ -44,18 +44,33 @@ const names = [
 ];
 
 
-const PaymentFields= () => {
+const PaymentFields = () => {
 
     const theme = useTheme();
     const [personName, setPersonName] = React.useState([]);
     const [personType, setPersonType] = React.useState('');
-    const [personDept, setPersonDept] = React.useState();
+    const [personDept, setPersonDept] = React.useState('');
     const [open, setOpen] = React.useState(false);
     const [dates, setDates] = React.useState([]);
-    const [structuredDates,setStructuredDates] = React.useState([])
-    const [tripPlanList,setTripPlanList] = React.useState()
+    const [structuredDates, setStructuredDates] = React.useState([])
+    const [tripPlanList, setTripPlanList] = React.useState()
+    const [employeeList, setEmployeeList] = React.useState([])
 
     // const [openEditDate, setOpenEditDate] = React.useState(false);
+
+    useEffect(() => {
+        axios.get('http://localhost:3001/api/getEmployee')
+            .then((res) => {
+                console.log("Received data:", res.data);
+                setEmployeeList(res.data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [])
+
+
+
     const handleOpen = () => {
         const structuredDates = dates.map((date, index) => ({
             day: index + 1,
@@ -64,6 +79,7 @@ const PaymentFields= () => {
         setStructuredDates(structuredDates);
         setOpen(true);
         console.log(structuredDates);
+        console.log("EmployeeList: ", employeeList)
     }
     const handleClose = () => setOpen(false);
 
@@ -102,6 +118,13 @@ const PaymentFields= () => {
         setPersonDept(value);
     };
 
+
+    const handleClearData = () => {
+        setPersonName([])
+        setPersonType('')
+        setPersonDept('')
+        setDates([])
+    }
 
 
     useEffect(() => {
@@ -146,16 +169,10 @@ const PaymentFields= () => {
                             }}
                             />}
                         >
-                            {names.map((name) => (
-                                <MenuItem key={name} value={name}>
-                                    <Checkbox checked={personName.indexOf(name) > -1}
-                                        sx={{
-                                            "&.Mui-checked": {
-                                                color: theme.palette.inputText.primary, // Change color when checked
-                                            },// Change checkbox color
-                                        }}
-                                    />
-                                    <ListItemText primary={name} />
+                            {employeeList.map(([id, name]) => (
+                                <MenuItem key={id} value={`${id}-${name}`}>
+                                   
+                                    <ListItemText primary={`${id}-${name}`} />
                                 </MenuItem>
                             ))}
                         </Select>
@@ -190,7 +207,6 @@ const PaymentFields= () => {
                         >
                             <MenuItem value="Individual">Individual</MenuItem>
                             <MenuItem value="Group">Group</MenuItem>
-
 
                         </Select>
                     </FormControl>
@@ -287,11 +303,11 @@ const PaymentFields= () => {
                     <IconButton onClick={handleOpen}>
                         <EditCalendarIcon sx={{ color: theme.palette.buttonBG.primary, }} />
                     </IconButton>
-                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={structuredDates} getTripPlanList={handleTripPlanList}/>
+                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={structuredDates} getTripPlanList={handleTripPlanList} />
 
                 </Toolbar >
             </div >
-            <TripPlan tripPlanList={tripPlanList}/>
+            <TripPlan tripPlanList={tripPlanList} handleClearData={handleClearData}/>
         </>
     )
 }

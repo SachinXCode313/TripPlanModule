@@ -21,6 +21,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import { useTheme } from '@emotion/react';
+import EditTripModal from './EditTripModal';
 
 const columns = [
     { id: 'action', label: 'Action', minWidth: 130 },
@@ -34,16 +35,31 @@ const columns = [
     { id: 'remarks', label: 'Remarks', minWidth: 100 },
 ];
 
-const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>{
+const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) => {
     const theme = useTheme();
 
     const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
-    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [EditModalOpen, setEditModalOpen] = useState(false);
     const [openDate, setOpenDate] = useState();
     const [openDay, setOpenDay] = useState();
     const [expanded, setExpanded] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+
 
     const [tripPlanList, setTripPlanList] = useState([]);
+
+    const handleCreateModalOpen = (day, date, index) => {
+        setCreateModalOpen(true);
+        setOpenDropdownIndex(index);
+        setOpenDay(day);
+        setOpenDate(date);
+        setExpanded(index);
+    };
+
+    const handleCreateModalClose = () => {
+        setCreateModalOpen(false);
+    };
 
     const handleEditModalOpen = (day, date, index) => {
         setEditModalOpen(true);
@@ -51,6 +67,8 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
         setOpenDay(day);
         setOpenDate(date);
         setExpanded(index);
+        setSelectedIndex(index);
+        console.log(index);
     };
 
     const handleEditModalClose = () => {
@@ -68,16 +86,29 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
         setTripPlanList(prevList => [...prevList, updatedFormData]);
         console.log(tripPlanList);
 
-
         // setTripPlanList(prevList => [...prevList, formData]);
         // console.log(tripPlanList);
     };
 
+    const handleEditTripPlanList = (formData, index) => {
+        setTripPlanList(prevList => {
+            // Create a new list with updated data
+            const updatedList = prevList.map((trip, i) =>
+                i === index ? { ...trip, ...formData } : trip
+            );
+            console.log("Updated Trip Plan List:", updatedList);
+            return updatedList;
+        });
+    };
+
+
     const handleSave = () => {
         getTripPlanList(tripPlanList);
         handleClose();
-        
+
     }
+
+
     return (
         <Modal
             open={open}
@@ -123,14 +154,14 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                                 <IconButton
                                     onClick={(event) => {
                                         event.stopPropagation();
-                                        handleEditModalOpen(obj.day, obj.date, index);
+                                        handleCreateModalOpen(obj.day, obj.date, index);
                                     }}
                                 >
                                     <AddCircleOutlineIcon />
                                 </IconButton>
                                 <CreateTripModal
-                                    open={editModalOpen}
-                                    handleClose={handleEditModalClose}
+                                    open={createModalOpen}
+                                    handleClose={handleCreateModalClose}
                                     day={openDay}
                                     date={openDate}
                                     setTripPlanList={handleTripPlanList}
@@ -160,8 +191,22 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                                                         <TableRow hover key={index}>
                                                             <TableCell>
                                                                 <IconButton>
-                                                                    <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                                                    <EditIcon
+                                                                        onClick={(event) => {
+                                                                            event.stopPropagation();
+                                                                            handleEditModalOpen(obj.day, obj.date, index);
+                                                                        }}
+                                                                        sx={{ color: theme.palette.buttonBG.primary }} />
                                                                 </IconButton>
+                                                                <EditTripModal
+                                                                    open={EditModalOpen}
+                                                                    handleClose={handleEditModalClose}
+                                                                    day={openDay}
+                                                                    date={openDate}
+                                                                    initialData={tripPlanList}
+                                                                    setTripPlanList={handleEditTripPlanList}
+                                                                    index={selectedIndex}
+                                                                />
                                                                 <IconButton>
                                                                     <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
                                                                 </IconButton>

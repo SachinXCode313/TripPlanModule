@@ -3,8 +3,8 @@ import { Box, Stack, Typography } from '@mui/material'
 import './TripPlan.css'
 import { useTheme } from '@emotion/react'
 import TripItems from './tripItems/TripItems'
-import { Button } from '@mui/material'
-
+import { Button, Snackbar, Alert } from '@mui/material'
+import axios from 'axios';
 
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import SubmitButton from './SubmitButton'
+import EditTripModal from '../paymentFields/dateModule/EditTripModal'
 
 
 const columns = [
@@ -29,7 +30,6 @@ const columns = [
   { id: 'clientName', label: 'Client Name', minWidth: 100 },
   { id: 'purpose', label: 'Purpose', minWidth: 100 },
   { id: 'Remarks', label: 'Remarks', minWidth: 100 },
-  { id: 'isDelete', label: 'isDelete', minWidth: 100 },
   // {
   //   id: 'population',
   //   label: 'Population',
@@ -64,23 +64,86 @@ const rows = [
 ];
 
 
-const TripPlan = ({ tripPlanList }) => {
+const TripPlan = ({ tripPlanList,handleClearData }) => {
   const theme = useTheme()
-  const [tripPlanData, setTripPlanData] = React.useState();
+  const [tripPlanData, setTripPlanData] = React.useState(tripPlanList);
+  const [EditModalOpen, setEditModalOpen] = React.useState(false);
+  const [selectedIndex, setSelectedIndex] = React.useState(null);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
-  //   const handleTripPlanData = (value) => {
-  //     setTripPlanData(value)
-  //     console.log(value);
-  // }
+  React.useEffect(() => {
+    setTripPlanData(tripPlanList);
+  }, [tripPlanList]);
+
+  const handleEditModalOpen = (index) => {
+    setEditModalOpen(true);
+    setSelectedIndex(index);
+    console.log(index);
+  };
+
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+  };
+
+  const handleEditTripPlanList = (formData, index) => {
+    setTripPlanData(prevList => {
+      // Create a new list with updated data
+      const updatedList = prevList.map((trip, i) =>
+        i === index ? { ...trip, ...formData } : trip
+      );
+      console.log("Updated Trip Plan List:", updatedList);
+      return updatedList;
+    });
+  };
+
+  const handleDelete = async (index) => {
+    const itemToDelete = tripPlanData[index]; // Assuming tripPlanData is an array and index corresponds to the item
+
+    // Prepare data for the API request
+    const data = {
+      sr: itemToDelete.sr,
+      date: itemToDelete.date,
+    };
+
+    try {
+      const res = await axios.post('http://localhost:3000/api/deletePlan', data)
+      console.log("data is appended")
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    setTripPlanData(prevList => {
+      const newList = prevList.filter((_, i) => i !== index);
+      setSnackbarMessage('Row deleted successfully!');
+      setSnackbarOpen(true);
+      return newList;
+    });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
 
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:3000/api/create', tripPlanData)
+      console.log("data is appended")
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleClear = () => {
+    handleClearData()
+    setTripPlanData([]);
+  };
 
 
 
-  const handleSubmit = () => {
-    console.log(tripPlanList)
-  }
   return (
     <Box
       sx={{
@@ -145,15 +208,27 @@ const TripPlan = ({ tripPlanList }) => {
                 ))}
               </TableRow>
             </thead>
-            {tripPlanList && tripPlanList.length > 0 && (
+            {tripPlanData && tripPlanData.length > 0 && (
               <TableBody>
-                {tripPlanList.map((tripPlan, innerIndex) => (
+                {tripPlanData.map((tripPlan, innerIndex) => (
                   <TableRow hover key={innerIndex}>
                     <TableCell>
                       <IconButton>
-                        <EditIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                        <EditIcon
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleEditModalOpen(innerIndex);
+                          }}
+                          sx={{ color: theme.palette.buttonBG.primary }} />
                       </IconButton>
-                      <IconButton>
+                      <EditTripModal
+                        open={EditModalOpen}
+                        handleClose={handleEditModalClose}
+                        initialData={tripPlanList}
+                        setTripPlanList={handleEditTripPlanList}
+                        index={selectedIndex}
+                      />
+                      <IconButton onClick={() => handleDelete(innerIndex)}>
                         <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
                       </IconButton>
                     </TableCell>
@@ -166,7 +241,6 @@ const TripPlan = ({ tripPlanList }) => {
                     <TableCell>{tripPlan.clientName}</TableCell>
                     <TableCell>{tripPlan.purpose}</TableCell>
                     <TableCell>{tripPlan.remarks}</TableCell>
-                    <TableCell>False</TableCell>
                   </TableRow>
                 ))}
 
@@ -178,8 +252,19 @@ const TripPlan = ({ tripPlanList }) => {
 
       </Paper>
       <Box sx={{ mt: "50px" }}>
-      <SubmitButton/>
         <Button variant="contained"
+          onClick={handleSubmit}
+          sx={{
+            color: theme.palette.buttonText.primary,
+            backgroundColor: theme.palette.buttonBG.primary,
+            borderRadius: "20px",
+            mr: "30px",
+            '&:hover': {
+              backgroundColor: theme.palette.buttonBG.hover,
+            },
+          }}>Submit</Button>
+        <Button variant="contained"
+          onClick={handleClear}
           sx={{
             color: theme.palette.buttonText.primary,
             backgroundColor: theme.palette.buttonBG.primary,
@@ -189,7 +274,18 @@ const TripPlan = ({ tripPlanList }) => {
             },
           }}>Clear</Button>
       </Box>
-          
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{ mt: 20 }}  // Positioning the Snackbar
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
     </Box>
   )
 }
