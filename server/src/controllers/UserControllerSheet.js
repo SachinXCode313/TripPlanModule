@@ -166,3 +166,5 @@ const deletePlan = async (req, res) => {
 };
 
 export { getTripPlan, createTripPlan, updateTripPlan, getEmployee, deletePlan };
+
+

@@ -1,19 +1,21 @@
 import express from "express";
-// import {createUser,getUser,updateUser,deleteUser}  from "../controllers/UserControllerMongoDB.js";
-import {getTripPlan,createTripPlan,updateTripPlan,getEmployee,deletePlan}  from "../controllers/UserControllerSheet.js";
+import {createPlan}  from "../controllers/UserControllerMongoDB.js";
+// import {getTripPlan,createTripPlan,updateTripPlan,getEmployee,deletePlan}  from "../controllers/UserControllerSheet.js";
 
 
 const routers = express.Router();
 
-routers.get('/get',getTripPlan)
+// routers.get('/get',getTripPlan)
 
-routers.post('/create',createTripPlan)
+// routers.post('/create',createTripPlan)
 
-routers.put('/update/:id',updateTripPlan)
+routers.post('/create',createPlan)
 
-routers.get('/getEmployee',getEmployee)
+// routers.put('/update/:id',updateTripPlan)
 
-routers.post('/deletePlan',deletePlan)
+// routers.get('/getEmployee',getEmployee)
+
+// routers.post('/deletePlan',deletePlan)
 
 // routers.delete('/delete/:id',deleteUser)
 

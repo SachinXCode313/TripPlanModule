@@ -2,7 +2,6 @@ import React from 'react'
 import { Box, Stack, Typography } from '@mui/material'
 import './TripPlan.css'
 import { useTheme } from '@emotion/react'
-import TripItems from './tripItems/TripItems'
 import { Button, Snackbar, Alert } from '@mui/material'
 import axios from 'axios';
 

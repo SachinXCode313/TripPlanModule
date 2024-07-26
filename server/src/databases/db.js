@@ -1,13 +1,12 @@
-
 import mongoose from 'mongoose'
 //Set up default mongoose connection
 
 const connectDB = async () => {
     try{
-        await mongoose.connect(process.env.DB_URL);
+        await mongoose.connect("mongodb://localhost:27017/tripplan");
         console.log("MongoDB Is Connected")
     }catch(error){
-        console.log(error);
+        console.log(error);s
     }
 }
 
