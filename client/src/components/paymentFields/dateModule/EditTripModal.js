@@ -4,25 +4,11 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { TextField } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { FormControl } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { City, Country, State } from 'country-state-city';
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
 
 const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index }) => {
     const theme = useTheme();
@@ -98,29 +84,41 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
         }
     }, [initialData, index]);
 
+    const handleCountryChange = (event, value) => {
+        const countryCode = value?.isoCode || '';
+        setFormData(prev => ({
+            ...prev,
+            country: value?.name || '',
+            state: '',
+            city: '',
+            countryCode,
+            stateCode: '',
+        }));
+    };
+
+    const handleStateChange = (event, value) => {
+        const stateCode = value?.isoCode || '';
+        setFormData(prev => ({
+            ...prev,
+            state: value?.name || '',
+            city: '',
+            stateCode,
+        }));
+    };
+
+    const handleCityChange = (event, value) => {
+        setFormData(prev => ({
+            ...prev,
+            city: value?.name || '',
+        }));
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value,
         }));
-        if (name === 'country') {
-            const countryCode = countries.find(c => c.name === value)?.isoCode || '';
-            setFormData(prev => ({
-                ...prev,
-                state: '',
-                city: '',
-                countryCode,
-            }));
-        }
-        if (name === 'state') {
-            const stateCode = states.find(s => s.name === value)?.isoCode || '';
-            setFormData(prev => ({
-                ...prev,
-                city: '',
-                stateCode,
-            }));
-        }
     };
 
     const handleSubmit = (e) => {
@@ -132,9 +130,9 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
     };
 
     const handleCancel = () => {
+
         handleClose();
     };
-
     return (
         <Modal
             open={open}
@@ -147,7 +145,7 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backdropFilter: 'blur(0.4px)',
+                backdropFilter: 'blur(0.7px)',
             }}
             keepMounted
         >
@@ -174,127 +172,112 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                     <Box sx={{ flexGrow: 1, p: 2, mt: 1 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
-                                    <InputLabel
-                                        id="select-country-label"
-                                        sx={{
-                                            '&.Mui-focused': {
-                                                color: theme.palette.text.primary,
-                                            },
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        Select Country
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-country-label"
-                                        id="select-country"
-                                        name="country"
-                                        value={formData.country}
-                                        onChange={handleInputChange}
-                                        input={
-                                            <OutlinedInput
-                                                id="select-country-input"
-                                                label="Select Country"
-                                                sx={{
+                                <Autocomplete
+                                    options={countries}
+                                    getOptionLabel={(option) => option.name || ''}
+                                    value={countries.find(c => c.name === formData.country) || null}
+                                    onChange={handleCountryChange}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select Country"
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+
+                                                '& .MuiInputBase-root': {  // styles for the input itself
+                                                    height: 45,  // adjust padding
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    color: theme.palette.text.primary, // Outline color on focus (click)
+                                                },
+                                                '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: theme.palette.text.primary,
+                                                        borderColor: theme.palette.text.primary, // Default outline color
                                                     },
-                                                    height: '45px',
-                                                }}
-                                            />
-                                        }
-                                        MenuProps={MenuProps}
-                                    >
-                                        {countries.map((country) => (
-                                            <MenuItem key={country.isoCode} value={country.name}>
-                                                {country.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.text.primary, // Default label color
+                                                    '&.Mui-focused': {
+                                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
-                                    <InputLabel
-                                        id="select-state-label"
-                                        sx={{
-                                            '&.Mui-focused': {
-                                                color: theme.palette.text.primary,
-                                            },
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        Select State
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-state-label"
-                                        id="select-state"
-                                        name="state"
-                                        value={formData.state}
-                                        onChange={handleInputChange}
-                                        input={
-                                            <OutlinedInput
-                                                id="select-state-input"
-                                                label="Select State"
-                                                sx={{
+                                <Autocomplete
+                                    options={states}
+                                    getOptionLabel={(option) => option.name || ''}
+                                    value={states.find(s => s.name === formData.state) || null}
+                                    onChange={handleStateChange}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select State"
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+
+                                                '& .MuiInputBase-root': {  // styles for the input itself
+                                                    height: 45,  // adjust padding
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    color: theme.palette.text.primary, // Outline color on focus (click)
+                                                },
+                                                '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: theme.palette.text.primary,
+                                                        borderColor: theme.palette.text.primary, // Default outline color
                                                     },
-                                                    height: '45px',
-                                                }}
-                                            />
-                                        }
-                                        MenuProps={MenuProps}
-                                    >
-                                        {states.map((state) => (
-                                            <MenuItem key={state.isoCode} value={state.name}>
-                                                {state.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.text.primary, // Default label color
+                                                    '&.Mui-focused': {
+                                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
-                                    <InputLabel
-                                        id="select-city-label"
-                                        sx={{
-                                            '&.Mui-focused': {
-                                                color: theme.palette.text.primary,
-                                            },
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        Select City
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-city-label"
-                                        id="select-city"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                        input={
-                                            <OutlinedInput
-                                                id="select-city-input"
-                                                label="Select City"
-                                                sx={{
+                                <Autocomplete
+                                    options={cities}
+                                    getOptionLabel={(option) => option.name || ''}
+                                    value={cities.find(c => c.name === formData.city) || null}
+                                    onChange={handleCityChange}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select City"
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+
+                                                '& .MuiInputBase-root': {  // styles for the input itself
+                                                    height: 45,  // adjust padding
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    color: theme.palette.text.primary, // Outline color on focus (click)
+                                                },
+                                                '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: theme.palette.text.primary,
+                                                        borderColor: theme.palette.text.primary, // Default outline color
                                                     },
-                                                    height: '45px',
-                                                }}
-                                            />
-                                        }
-                                        MenuProps={MenuProps}
-                                    >
-                                        {cities.map((city) => (
-                                            <MenuItem key={city.name} value={city.name}>
-                                                {city.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.text.primary, // Default label color
+                                                    '&.Mui-focused': {
+                                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
                             </Grid>
                             <Grid item xs={6}>
                                 <FormControl sx={{ width: 270 }} size="small">

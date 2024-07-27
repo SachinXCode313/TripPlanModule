@@ -19,7 +19,7 @@ import EditTripModal from '../paymentFields/dateModule/EditTripModal'
 
 
 const columns = [
-  { id: 'action', label: 'Action', minWidth: 130 },
+  { id: 'action', label: 'Action', minWidth: 120 },
   { id: 'sr', label: 'Sr.', minWidth: 50 },
   { id: 'date', label: 'Date', minWidth: 110 },
   { id: 'day', label: 'Day', minWidth: 60 },
@@ -63,7 +63,7 @@ const rows = [
 ];
 
 
-const TripPlan = ({ tripPlanList,handleClearData }) => {
+const TripPlan = ({ tripPlanList, handleClearData }) => {
   const theme = useTheme()
   const [tripPlanData, setTripPlanData] = React.useState(tripPlanList);
   const [EditModalOpen, setEditModalOpen] = React.useState(false);
@@ -144,148 +144,144 @@ const TripPlan = ({ tripPlanList,handleClearData }) => {
 
 
   return (
-    <Box
-      sx={{
-        // width: '100%',
-        // width: {
-        //   xs: '90%', // Set width to 100% for extra-small screens
-        //   sm: '80%',  // Set width to 80% for small screens
-        //   md: '70%',  // Set width to 70% for medium screens
-        //   lg: '60%',  // Set width to 60% for large screens
-        //   xl: '50%',  // Set width to 50% for extra-large screens
-        // },
-        maxWidth: 'xxl',
+    <div >
 
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column', // Set display to flex
-        // justifyContent: 'center', // Center horizontally
-        alignItems: 'center', // Center vertically
-        borderRadius: 1,
-        bgcolor: 'primary.main',
-        marginTop: theme.spacing(1),
-        boxShadow: '10px 1px 15px rgba(0, 0, 0, 0.5)',
-        mx: 'auto'
-      }}
-    >
-
-      <Typography variant="h3" component="h2" sx={{ fontFamily: 'inherit', mt: "50px", fontWeight: "600", textAlign: 'center' }}>
-        Trip Plan
-      </Typography>
-      {/* <TripItems tripPlanData={tripPlanList} /> */}
-
-
-
-
-
-
-      <Paper
+      <Box
         sx={{
-          width: {
-            xs: '90%', // Set width to 100% for extra-small screens
-            sm: '80%',  // Set width to 80% for small screens
-            md: '70%',  // Set width to 70% for medium screens
-            lg: '60%',  // Set width to 60% for large screens
-            xl: '70%',  // Set width to 50% for extra-large screens
-          },
-          overflow: 'hidden',
-          mt: "60px"
-        }
-        }>
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label="sticky table">
-            <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </thead>
-            {tripPlanData && tripPlanData.length > 0 && (
-              <TableBody>
-                {tripPlanData.map((tripPlan, innerIndex) => (
-                  <TableRow hover key={innerIndex}>
-                    <TableCell>
-                      <IconButton>
-                        <EditIcon
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            handleEditModalOpen(innerIndex);
-                          }}
-                          sx={{ color: theme.palette.buttonBG.primary }} />
-                      </IconButton>
-                      <EditTripModal
-                        open={EditModalOpen}
-                        handleClose={handleEditModalClose}
-                        initialData={tripPlanList}
-                        setTripPlanList={handleEditTripPlanList}
-                        index={selectedIndex}
-                      />
-                      <IconButton onClick={() => handleDelete(innerIndex)}>
-                        <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell>{tripPlan.sr}</TableCell>
-                    <TableCell>{tripPlan.date}</TableCell>
-                    <TableCell>{tripPlan.day}</TableCell>
-                    <TableCell>{tripPlan.country}</TableCell>
-                    <TableCell>{tripPlan.state}</TableCell>
-                    <TableCell>{tripPlan.city}</TableCell>
-                    <TableCell>{tripPlan.clientName}</TableCell>
-                    <TableCell>{tripPlan.purpose}</TableCell>
-                    <TableCell>{tripPlan.remarks}</TableCell>
-                  </TableRow>
-                ))}
-
-              </TableBody>
-            )}
-          </Table>
-        </TableContainer>
-
-
-      </Paper>
-      <Box sx={{ mt: "50px" }}>
-        <Button variant="contained"
-          onClick={handleSubmit}
-          sx={{
-            color: theme.palette.buttonText.primary,
-            backgroundColor: theme.palette.buttonBG.primary,
-            borderRadius: "20px",
-            mr: "30px",
-            '&:hover': {
-              backgroundColor: theme.palette.buttonBG.hover,
-            },
-          }}>Submit</Button>
-        <Button variant="contained"
-          onClick={handleClear}
-          sx={{
-            color: theme.palette.buttonText.primary,
-            backgroundColor: theme.palette.buttonBG.primary,
-            borderRadius: "20px",
-            '&:hover': {
-              backgroundColor: theme.palette.buttonBG.hover,
-            },
-          }}>Clear</Button>
-      </Box>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        sx={{ mt: 20 }}  // Positioning the Snackbar
+          // width: '100%',
+          // width: {
+          //   xs: '90%', // Set width to 100% for extra-small screens
+          //   sm: '80%',  // Set width to 80% for small screens
+          //   md: '70%',  // Set width to 70% for medium screens
+          //   lg: '60%',  // Set width to 60% for large screens
+          //   xl: '50%',  // Set width to 50% for extra-large screens
+          // },
+          minHeight: '82vh',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column', // Set display to flex
+          // justifyContent: 'center', // Center horizontally
+          alignItems: 'center', // Center vertically
+          borderRadius: 1,
+          bgcolor: 'primary.main',
+          marginTop: theme.spacing(1),
+          boxShadow: '10px 1px 15px rgba(0, 0, 0, 0.5)',
+          mx: 'auto'
+        }}
       >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
 
-    </Box>
+        <Typography variant="h3" component="h2" sx={{ fontFamily: 'inherit', mt: 3, fontWeight: "600", textAlign: 'center' }}>
+          Trip Plan
+        </Typography>
+
+        <Paper
+          sx={{
+            width: {
+              xs: '90%', // Set width to 100% for extra-small screens
+              sm: '80%',  // Set width to 80% for small screens
+              md: '70%',  // Set width to 70% for medium screens
+              lg: '60%',  // Set width to 60% for large screens
+              xl: '70%',  // Set width to 50% for extra-large screens
+            },
+            overflow: 'hidden',
+            mt: 3
+          }
+          }>
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label="sticky table">
+              <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </thead>
+              {tripPlanData && tripPlanData.length > 0 && (
+                <TableBody>
+                  {tripPlanData.map((tripPlan, innerIndex) => (
+                    <TableRow hover key={innerIndex}>
+                      <TableCell>
+                        <IconButton>
+                          <EditIcon
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleEditModalOpen(innerIndex);
+                            }}
+                            sx={{ color: theme.palette.buttonBG.primary }} />
+                        </IconButton>
+                        <EditTripModal
+                          open={EditModalOpen}
+                          handleClose={handleEditModalClose}
+                          initialData={tripPlanList}
+                          setTripPlanList={handleEditTripPlanList}
+                          index={selectedIndex}
+                        />
+                        <IconButton onClick={() => handleDelete(innerIndex)}>
+                          <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>{tripPlan.sr}</TableCell>
+                      <TableCell>{tripPlan.date}</TableCell>
+                      <TableCell>{tripPlan.day}</TableCell>
+                      <TableCell>{tripPlan.country}</TableCell>
+                      <TableCell>{tripPlan.state}</TableCell>
+                      <TableCell>{tripPlan.city}</TableCell>
+                      <TableCell>{tripPlan.clientName}</TableCell>
+                      <TableCell>{tripPlan.purpose}</TableCell>
+                      <TableCell>{tripPlan.remarks}</TableCell>
+                    </TableRow>
+                  ))}
+
+                </TableBody>
+              )}
+            </Table>
+          </TableContainer>
+
+
+        </Paper>
+        <Box sx={{ mb:10}}>
+          <Button variant="contained"
+            onClick={handleSubmit}
+            sx={{
+              color: theme.palette.buttonText.primary,
+              backgroundColor: theme.palette.buttonBG.primary,
+              borderRadius: "20px",
+              mr: "30px",
+              '&:hover': {
+                backgroundColor: theme.palette.buttonBG.hover,
+              },
+            }}>Submit</Button>
+          <Button variant="contained"
+            onClick={handleClear}
+            sx={{
+              color: theme.palette.buttonText.primary,
+              backgroundColor: theme.palette.buttonBG.primary,
+              borderRadius: "20px",
+              '&:hover': {
+                backgroundColor: theme.palette.buttonBG.hover,
+              },
+            }}>Clear</Button>
+        </Box>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          sx={{ mt: 20 }}  // Positioning the Snackbar
+        >
+          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+
+      </Box>
+    </div>
   )
 }
 

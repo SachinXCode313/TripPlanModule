@@ -5,17 +5,11 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import ListItemText from '@mui/material/ListItemText';
 import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { TextField } from '@mui/material';
+import { TextField, Autocomplete } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { City, Country, State } from 'country-state-city';
-import axios from 'axios';
-import { ElevenMp } from '@mui/icons-material';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -30,8 +24,9 @@ const MenuProps = {
 
 const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     const theme = useTheme();
-    const [country, setCountry] = React.useState('');
-    const [state, setState] = React.useState('');
+    const [country, setCountry] = React.useState(null);
+    const [state, setState] = React.useState(null);
+    const [city, setCity] = React.useState(null);
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
@@ -44,15 +39,15 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         purpose: '',
         remarks: '',
         countryCode: '',
-        stateCode:'',
-        
+        stateCode: '',
+
     });
 
     useEffect(() => {
         const getAllCountries = async () => {
             try {
                 const countries = await Country.getAllCountries();
-                setCountries(countries)
+                setCountries(countries);
             } catch (err) {
                 console.log(err);
             }
@@ -62,9 +57,11 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
 
     useEffect(() => {
         const getStates = async () => {
-            if (country.isoCode) {
+            if (country && country.isoCode) {
                 const states = await State.getStatesOfCountry(country.isoCode);
                 setStates(states);
+            } else {
+                setStates([]);
             }
         };
         getStates();
@@ -72,13 +69,15 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
 
     useEffect(() => {
         const getCities = async () => {
-            if (state.isoCode) {
+            if (country && country.isoCode && state && state.isoCode) {
                 const cities = await City.getCitiesOfState(country.isoCode, state.isoCode);
                 setCities(cities);
+            } else {
+                setCities([]);
             }
         };
         getCities();
-    }, [state]);
+    }, [country, state]);
 
     const handleInputChange = (name) => (event) => {
         setFormData({
@@ -87,46 +86,52 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         });
     };
 
-    const handleChangeCountry = async (event) => {
-        const selectedCountry = event.target.value;
-        setCountry(selectedCountry)
+    const handleChangeCountry = (event, selectedCountry) => {
+        setCountry(selectedCountry);
         setFormData({
             ...formData,
             day: day,
             date: date,
-            country: selectedCountry.name,
-            countryCode:selectedCountry.isoCode,
+            country: selectedCountry ? selectedCountry.name : '',
+            countryCode: selectedCountry ? selectedCountry.isoCode : '',
             state: '',
             city: '',
         });
     };
 
-    const handleChangeState = async (event) => {
-        const selectedState = event.target.value;
-        setState(selectedState)
+    const handleChangeState = (event, selectedState) => {
+        setState(selectedState);
         setFormData({
             ...formData,
-            state: selectedState.name,
-            stateCode:selectedState.isoCode,
+            state: selectedState ? selectedState.name : '',
+            stateCode: selectedState ? selectedState.isoCode : '',
             city: '',
         });
     };
 
-
-    // const handleClientName = (event) => setClientName(event.target.value);
-    // const handlePurpose = (event) => setPurpose(event.target.value);
-    // const handleRemarks = (event) => setRemarks(event.target.value);
+    const handleChangeCity = (event, selectedCity) => {
+        setFormData({
+            ...formData,
+            city: selectedCity ? selectedCity.name : '',
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevents the default form submission
         setTripPlanList(formData);
-
-        // console.log(formData); // Log the form data
-        // setTripPlanList(formData)
-
-        // Reset states and cities
-        setCountry('')
-        setState('')
+        setCountry(null)
+        setState(null)
+        setCity(null)
+        setFormData({
+            date,
+            country: '',
+            state: '',
+            city: '',
+            clientName: '',
+            purpose: '',
+            remarks: '',
+            countryCode: '',
+            stateCode: '',})
         console.log(formData)
         console.log(date)
         handleClose(); // Close the modal
@@ -134,9 +139,19 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
 
     const handleCancel = async (e) => {
         e.preventDefault();
-
-        setCountry('')
-        setState('')
+        setFormData({
+            date,
+            country: null,
+            state: null,
+            city: null,
+            clientName: '',
+            purpose: '',
+            remarks: '',
+            countryCode: '',
+            stateCode: '',})
+        setCountry(null)
+        setState(null)
+        setCity(null)
         handleClose();
 
     }
@@ -144,8 +159,6 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     return (
         <Modal
             open={open}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
             sx={{
                 '& .MuiBackdrop-root': {
                     backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -153,22 +166,29 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backdropFilter: 'blur(0.4px)',
+                backdropFilter: 'blur(0.7px)',
             }}
             keepMounted
         >
             <Box
                 sx={{
                     mt: 5,
-                    width: 600,
+                    width: {
+                        xs: '90%', // Set width to 100% for extra-small screens
+                        sm: '60%',  // Set width to 80% for small screens
+                        md: '50%',  // Set width to 70% for medium screens
+                        lg: '40%',  // Set width to 60% for large screens
+                        xl: '35%',  // Set width to 50% for extra-large screens
+                    },
                     height: 320,
                     bgcolor: 'background.paper',
                     border: '2px solid #3d3d3d55',
                     borderRadius: 2,
                     boxShadow: '0 0 20px rgba(0, 0, 0, 0.2)',
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
                     p: 1,
                 }}
             >
@@ -177,143 +197,130 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
-                    <Box sx={{ flexGrow: 1, p: 2, mt: 1 }}>
+                    <Box sx={{ flexGrow: 1, p: 1, mt: 1 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
-                                    <InputLabel
-                                        id="select-country-label"
-                                        sx={{
-                                            '&.Mui-focused': {
-                                                color: theme.palette.text.primary,
-                                            },
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        Select Country
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-country-label"
-                                        id="select-country"
-                                        value={country}
-                                        onChange={handleChangeCountry}
-                                        input={
-                                            <OutlinedInput
-                                                id="select-country-input"
-                                                label="Select Country"
-                                                sx={{
-                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: theme.palette.text.primary,
-                                                    },
-                                                    height: '45px',
-                                                }}
-                                            />
-                                        }
-                                        MenuProps={MenuProps}
+                                <Autocomplete
+                                    options={countries}
+                                    getOptionLabel={(option) => option.name}
+                                    value={country}
+                                    onChange={handleChangeCountry}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select Country"
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
 
-                                    >
-                                        {countries.map((country) => (
-                                            <MenuItem key={country.isoCode} value={country}>
-                                                {country.name}
-                                            </MenuItem>
-                                        ))}
+                                                '& .MuiInputBase-root': {  // styles for the input itself
+                                                    height: 45,  // adjust padding
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    color: theme.palette.text.primary, // Outline color on focus (click)
+                                                },
+                                                '& .MuiOutlinedInput-root': {
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: theme.palette.text.primary, // Default outline color
+                                                    },
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.text.primary, // Default label color
+                                                    '&.Mui-focused': {
+                                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Autocomplete
+                                    options={states}
+                                    getOptionLabel={(option) => option.name}
+                                    value={state}
+                                    onChange={handleChangeState}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select State"
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
 
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
-                                    <InputLabel
-                                        id="select-state-label"
-                                        sx={{
-                                            '&.Mui-focused': {
-                                                color: theme.palette.text.primary,
-                                            },
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        Select State
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-state-label"
-                                        id="select-state"
-                                        value={state}
-                                        onChange={handleChangeState}
-                                        input={
-                                            <OutlinedInput
-                                                id="select-state-input"
-                                                label="Select State"
-                                                sx={{
+                                                '& .MuiInputBase-root': {  // styles for the input itself
+                                                    height: 45,  // adjust padding
+
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    color: theme.palette.text.primary, // Outline color on focus (click)
+                                                },
+                                                '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: theme.palette.text.primary,
+                                                        borderColor: theme.palette.text.primary, // Default outline color
                                                     },
-                                                    height: '45px',
-                                                }}
-                                            />
-                                        }
-                                        MenuProps={MenuProps}
-                                    >
-                                        {states.map((state) => (
-                                            <MenuItem key={state.isoCode} value={state}
-                                            >
-                                                {state.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.text.primary, // Default label color
+                                                    '&.Mui-focused': {
+                                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                                    },
+                                                },
+                                            }}
+                                            
+                                        />
+                                    )}
+                                />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
-                                    <InputLabel
-                                        id="select-city-label"
-                                        sx={{
-                                            '&.Mui-focused': {
-                                                color: theme.palette.text.primary,
-                                            },
-                                            color: theme.palette.text.primary,
-                                        }}
-                                    >
-                                        Select City
-                                    </InputLabel>
-                                    <Select
-                                        labelId="select-city-label"
-                                        id="select-city"
-                                        value={formData.city}
-                                        onChange={handleInputChange('city')}
-                                        input={
-                                            <OutlinedInput
-                                                id="select-city-input"
-                                                label="Select City"
-                                                sx={{
+                                <Autocomplete
+                                    options={cities}
+                                    getOptionLabel={(option) => option.name}
+                                    value={city}
+                                    onChange={handleChangeCity}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select City"
+                                            variant="outlined"
+                                            size="small"
+                                            sx={{
+
+                                                '& .MuiInputBase-root': {  // styles for the input itself
+                                                    height: 45,  // adjust padding
+                                                },
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    color: theme.palette.text.primary, // Outline color on focus (click)
+                                                },
+                                                '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: theme.palette.text.primary,
+                                                        borderColor: theme.palette.text.primary, // Default outline color
                                                     },
-                                                    height: '45px',
-                                                }}
-                                            />
-                                        }
-                                        MenuProps={MenuProps}
-                                    >
-                                        {cities.map((city) => (
-                                            <MenuItem key={city.name} value={city.name}>
-                                                {city.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: theme.palette.text.primary, // Default label color
+                                                    '&.Mui-focused': {
+                                                        color: theme.palette.text.primary, // Label color on focus (click)
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
                             </Grid>
-                            <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
+                            <Grid item xs={6} >
                                     <TextField
                                         label="Client Name"
                                         id="outlined-size-small"
                                         value={formData.clientName}
                                         onChange={handleInputChange('clientName')}
+                                        fullWidth 
                                         size="small"
                                         sx={{
-
                                             '& .MuiInputBase-root': {  // styles for the input itself
                                                 height: 45,  // adjust padding
+                                                width:'100%'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                 color: theme.palette.text.primary, // Outline color on focus (click)
@@ -332,15 +339,14 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                         }}
                                         variant="outlined"
                                     />
-                                </FormControl>
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Purpose"
                                         id="outlined-size-small"
                                         value={formData.purpose}
                                         onChange={handleInputChange('purpose')}
+                                        fullWidth 
                                         size="small"
                                         sx={{
 
@@ -364,18 +370,16 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                         }}
                                         variant="outlined"
                                     />
-                                </FormControl>
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Remarks"
                                         id="outlined-size-small"
                                         value={formData.remarks}
                                         onChange={handleInputChange('remarks')}
+                                        fullWidth 
                                         size="small"
                                         sx={{
-
                                             '& .MuiInputBase-root': {  // styles for the input itself
                                                 height: 45,  // adjust padding
                                             },
@@ -396,19 +400,19 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                         }}
                                         variant="outlined"
                                     />
-                                </FormControl>
                             </Grid>
                             {/* Add more Grid items with TextField components as needed */}
                         </Grid>
                     </Box>
-                    <Box sx={{
-                        mb: 2, ml: 25, display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                    
+
+                </form>
+                <Box sx={{
+                        mt:2
                     }}>
                         <Button
                             variant="contained"
-                            type="submit"
+                            onClick={handleSubmit}
                             sx={{
                                 color: theme.palette.buttonText.primary,
                                 backgroundColor: theme.palette.buttonBG.primary,
@@ -437,10 +441,9 @@ const CreateTripModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                         >
                             Cancel
                         </Button>
-
                     </Box>
-                </form>
             </Box>
+            
         </Modal>
     );
 };

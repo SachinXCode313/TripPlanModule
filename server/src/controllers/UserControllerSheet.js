@@ -1,4 +1,5 @@
 import { auth, spreadsheetId, googleSheets } from "../databases/sheet.js";
+import { TripPlan,Counter } from "../models/Employees.js";
 
 const getLastData = async () => {
   try {
@@ -32,6 +33,15 @@ const getLastData = async () => {
   }
 };
 
+const getNextSequenceValue = async (sequenceName) => {
+  const sequence = await Counter.findByIdAndUpdate(
+      sequenceName,
+      { $inc: { sequence_value: 1 } },
+      { new: true, upsert: true }
+  );
+  return sequence.sequence_value;
+};
+
 //Get Users Data
 const getTripPlan = async (req, res) => {
   const getRows = await googleSheets.spreadsheets.values.get({
@@ -50,6 +60,18 @@ const getTripPlan = async (req, res) => {
 //Create Users Data
 const createTripPlan = async (req, res) => {
   try {
+    const trips = req.body; // Assuming req.body is an array of trip objects
+    const planIdForMongo = await getNextSequenceValue('planIdCounter'); // Generate the next planId
+
+    // Validate and save each trip object with the new planId
+    for (const trip of trips) {
+      const newTrip = new TripPlan({
+        ...trip,
+        planId: planIdForMongo.toString(), // Convert to string if needed
+      });
+      await newTrip.save();
+    }
+
     const { lastPlanId } = await getLastData();
     // Initialize planId and sr based on last data
     let planId = lastPlanId + 1;

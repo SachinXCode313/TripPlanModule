@@ -1,4 +1,4 @@
-import { Button, Toolbar } from "@mui/material"
+import { Button, Grid, Toolbar } from "@mui/material"
 import * as React from 'react';
 import { useEffect } from "react";
 import { useTheme } from '@mui/material/styles';
@@ -143,6 +143,7 @@ const PaymentFields = () => {
             <div className="paymentFields">
                 <Toolbar>
                     {/* EmployeeID */}
+
                     <FormControl sx={{ m: 1, my: 2, width: 400 }} size="small">
                         <InputLabel id="demo-multiple-chip-label"
                             sx={{
@@ -288,7 +289,7 @@ const PaymentFields = () => {
                             borderRadius: "4px",
                             fontSize: "16px",
                             padding: "3px 12px",
-                            width: "400px",
+                            width: "300px",
                             backgroundColor: "transparent",
                             color: theme.palette.text.primary,
                             borderWidth: "1px",

@@ -113,12 +113,23 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
         <Modal
             open={open}
             onClose={handleClose}
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(0.7px)' }}
+            sx={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(0.7px)',
+                '& .MuiBackdrop-root': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                },
+            }}
         >
             <Box
                 sx={{
                     mt: 5,
-                    width: 1200,
+                    width: {
+                        xs: '95%', // Set width to 100% for extra-small screens
+                        sm: '80%',  // Set width to 80% for small screens
+                        md: '70%',  // Set width to 70% for medium screens
+                        lg: '60%',  // Set width to 60% for large screens
+                        xl: '70%',  // Set width to 50% for extra-large screens
+                    },
                     height: 550,
                     bgcolor: 'background.paper',
                     border: '2px solid #666666',
@@ -128,13 +139,20 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                     flexDirection: 'column',
                     alignItems: 'center',
                     p: 2,
+                    px: 5,
                     overflow: 'auto'
                 }}
             >
                 <Typography variant="h5" component="h5" sx={{ fontWeight: 'bold' }}>
                     Plan For {dateCount} Days
                 </Typography>
-                <Box sx={{ height: 600, width: 1100 }}>
+                <Box sx={{
+                    maxHeight: 440,
+                    height: 440,
+                    width: '100%',
+                    overflow: 'auto',
+                    my: 2,
+                }}>
                     {dates.map((obj, index) => (
                         <Accordion
                             expanded={expanded === index}

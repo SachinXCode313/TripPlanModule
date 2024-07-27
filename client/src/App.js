@@ -54,9 +54,6 @@ function App() {
         <Navbar toggleDark={toggleDark} setToggleDark={setToggleDark} />
         <Background />
         <PaymentFields />
-
-
-
       </ThemeProvider>
 
 
