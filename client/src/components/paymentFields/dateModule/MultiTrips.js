@@ -25,8 +25,8 @@ import EditTripModal from './EditTripModal';
 
 const columns = [
     { id: 'action', label: 'Action', minWidth: 130 },
-    { id: 'sr', label: 'Sr.', minWidth: 70 },
-    { id: 'date', label: 'Date', minWidth: 100 },
+    { id: 'sr', label: 'Sr.', minWidth: 50 },
+    { id: 'date', label: 'Date', minWidth: 105 },
     { id: 'country', label: 'Country', minWidth: 130 },
     { id: 'state', label: 'State', minWidth: 100 },
     { id: 'city', label: 'City', minWidth: 100 },
@@ -34,6 +34,14 @@ const columns = [
     { id: 'purpose', label: 'Purpose', minWidth: 100 },
     { id: 'remarks', label: 'Remarks', minWidth: 100 },
 ];
+
+const customScrollbar = {
+    '&::-webkit-scrollbar': {
+        display: 'none',
+    },
+    '-ms-overflow-style': 'none', // Internet Explorer 10+
+    'scrollbar-width': 'none', // Firefox
+};
 
 const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) => {
     const theme = useTheme();
@@ -139,7 +147,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                     flexDirection: 'column',
                     alignItems: 'center',
                     p: 2,
-                    px: 5,
+                    px: 3,
                     overflow: 'auto'
                 }}
             >
@@ -149,22 +157,39 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                 <Box sx={{
                     maxHeight: 440,
                     height: 440,
-                    width: '100%',
                     overflow: 'auto',
                     my: 2,
+                    py: 0,
+                    width: "100%",
+                    ...customScrollbar
                 }}>
                     {dates.map((obj, index) => (
                         <Accordion
                             expanded={expanded === index}
                             onChange={() => setExpanded(expanded === index ? false : index)}
                             key={obj.date}
+                            sx={{
+                                boxShadow: 'rgba(50, 50, 93, 0.25) 2px 2px 5px -2px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;',
+                                '&:before': {
+                                    display: 'none', // Remove default border before pseudo-element
+                                },
+                                my: 1,
+                            }}
+                        // box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 
 
                         >
                             <AccordionSummary
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                                sx={{ pt: 0, display: 'flex', alignItems: 'center', }}
+                                sx={{
+                                    py: 0, // Remove vertical padding
+                                    height: 20, // Set default height
+                                    '&.Mui-expanded': { // Target the expanded state correctly
+                                        minHeight: '35px', // Adjust the min-height when expanded
+                                    },
+                                    '&.MuiButtonBase-root-MuiAccordionSummary-root': { // General AccordionSummary styles
+                                        minHeight: '20px', // Adjust the min-height for general state
+                                    },
+                                }}
                             >
                                 <Typography variant="h6" sx={{ fontWeight: 'normal', flexGrow: 1 }}>
                                     {`Day-${obj.day}  ${obj.date}`}
@@ -185,17 +210,19 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                                     setTripPlanList={handleTripPlanList}
                                 />
                             </AccordionSummary>
-                            <AccordionDetails>
-                                <Box sx={{ p: 1, pt: 0 }}>
-                                    <TableContainer component={Paper}>
+                            <AccordionDetails
+                                sx={{ p: 1 }}>
+                                <Box sx={{ p: 0, pt: 0 }}>
+                                    <TableContainer component={Paper} sx={{...customScrollbar}}>
                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                            <thead sx={{ backgroundColor: theme.palette.primary.main }}>
+                                            <thead sx={{ backgroundColor: theme.palette.primary.main, }}>
                                                 <TableRow>
                                                     {columns.map((column) => (
                                                         <TableCell
                                                             key={column.id}
                                                             align={column.align}
                                                             style={{ minWidth: column.minWidth }}
+                                                            sx={{ py: 1.5 }}
                                                         >
                                                             {column.label}
                                                         </TableCell>

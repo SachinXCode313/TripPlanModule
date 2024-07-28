@@ -1,4 +1,4 @@
-import { Button, Grid, Toolbar } from "@mui/material"
+import { Box, Button, Grid, Toolbar } from "@mui/material"
 import * as React from 'react';
 import { useEffect } from "react";
 import { useTheme } from '@mui/material/styles';
@@ -30,18 +30,8 @@ const MenuProps = {
 
 
 
-const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
+
+
 
 
 const PaymentFields = () => {
@@ -140,175 +130,214 @@ const PaymentFields = () => {
 
     return (
         <>
-            <div className="paymentFields">
-                <Toolbar>
-                    {/* EmployeeID */}
 
-                    <FormControl sx={{ m: 1, my: 2, width: 400 }} size="small">
-                        <InputLabel id="demo-multiple-chip-label"
-                            sx={{
+                <div className="paymentFields">
+                    {/* <div className="blur-background"></div> */}
+                    <Toolbar>
+                        {/* EmployeeID */}
+                        <Grid container sx={{ my: 2, mb: 3 }} spacing={2}>
+                            <Grid item xs={6} sm={4} md={2.4}>
+                                <FormControl sx={{}} fullWidth size="small">
+                                    <InputLabel id="demo-multiple-chip-label"
+                                        sx={{
 
-                                "&.Mui-focused": {
-                                    color: theme.palette.text.primary, // Change label color when focused
-                                },
-                                color: theme.palette.text.primary,
-                            }}>Employee ID
-                        </InputLabel>
-                        <Select
-                            labelId="demo-multiple-checkbox-label"
-                            id="demo-multiple-checkbox"
-                            multiple
-                            value={personName}
-                            onChange={handleChangePerson}
-                            MenuProps={MenuProps}
-                            renderValue={(selected) => selected.join(', ')}
-                            input={<OutlinedInput id="select-multiple-chip" label="Employee ID" sx={{
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: theme.palette.text.primary,
-                                },
-                                height: "45px",
-                            }}
-                            />}
-                        >
-                            {employeeList.map(([id, name]) => (
-                                <MenuItem key={id} value={`${id}-${name}`}>
-                                   
-                                    <ListItemText primary={`${id}-${name}`} />
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                                            "&.Mui-focused": {
+                                                color: theme.palette.text.primary, // Change label color when focused
+                                            },
+                                            color: theme.palette.text.primary,
+                                        }}>Employee ID
+                                    </InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        multiple
+                                        value={personName}
+                                        onChange={handleChangePerson}
+                                        MenuProps={MenuProps}
+                                        renderValue={(selected) => selected.join(', ')}
+                                        input={<OutlinedInput id="select-multiple-chip" label="Employee ID" sx={{
+                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                                borderColor: theme.palette.text.primary,
+                                            },
+                                            height: "45px",
+                                        }}
+                                        />}
+                                    >
+                                        {employeeList.map(([id, name]) => (
+                                            <MenuItem key={id} value={`${id}-${name}`}>
 
+                                                <ListItemText primary={`${id}-${name}`} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
 
-                    {/* Select Type */}
-                    <FormControl sx={{ m: 1, width: 300 }} size="small">
-                        <InputLabel id="demo-multiple-chip-label"
-                            sx={{
-                                "&.Mui-focused": {
-                                    color: theme.palette.text.primary, // Change label color when focused
-                                },
-                                color: theme.palette.text.primary,
-                            }}>Select Type</InputLabel>
-                        <Select
-                            labelId="demo-multiple-checkbox-label"
-                            id="demo-multiple-checkbox"
+                            {/* Select Type */}
+                            <Grid item xs={6} sm={4} md={2.4}>
+                                <FormControl sx={{}} fullWidth size="small">
+                                    <InputLabel id="demo-multiple-chip-label"
+                                        sx={{
+                                            "&.Mui-focused": {
+                                                color: theme.palette.text.primary, // Change label color when focused
+                                            },
+                                            color: theme.palette.text.primary,
+                                        }}>Select Type</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
 
-                            value={personType}
-                            onChange={handleChangeType}
-                            input={<OutlinedInput id="select-multiple-chip" label="Select Type" sx={{
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: theme.palette.text.primary,
-                                },
-                                height: "45px",
-                            }}
+                                        value={personType}
+                                        onChange={handleChangeType}
+                                        input={<OutlinedInput id="select-multiple-chip" label="Select Type" sx={{
+                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                                borderColor: theme.palette.text.primary,
+                                            },
+                                            height: "45px",
+                                        }}
 
-                            />}
+                                        />}
 
-                            MenuProps={MenuProps}
-                        >
-                            <MenuItem value="Individual">Individual</MenuItem>
-                            <MenuItem value="Group">Group</MenuItem>
+                                        MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value="Individual">Individual</MenuItem>
+                                        <MenuItem value="Group">Group</MenuItem>
 
-                        </Select>
-                    </FormControl>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
 
+                            {/* Select Dept */}
+                            <Grid item xs={6} sm={4} md={2.4}>
+                                <FormControl sx={{}} fullWidth size="small">
+                                    <InputLabel id="demo-multiple-chip-label"
+                                        sx={{
+                                            "&.Mui-focused": {
+                                                color: theme.palette.text.primary, // Change label color when focused
+                                            },
+                                            color: theme.palette.text.primary,
+                                        }}>Select Dept</InputLabel>
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        value={personDept}
+                                        onChange={handleChangeDept}
+                                        input={<OutlinedInput id="select-dept" label="Select Dept" sx={{
+                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                                borderColor: theme.palette.text.primary,
+                                            },
+                                            height: "45px",
+                                        }}
 
-                    {/* Select Dept */}
-                    <FormControl sx={{ m: 1, width: 300 }} size="small">
-                        <InputLabel id="demo-multiple-chip-label"
-                            sx={{
-                                "&.Mui-focused": {
-                                    color: theme.palette.text.primary, // Change label color when focused
-                                },
-                                color: theme.palette.text.primary,
-                            }}>Select Dept</InputLabel>
-                        <Select
-                            labelId="demo-multiple-checkbox-label"
-                            id="demo-multiple-checkbox"
-                            value={personDept}
-                            onChange={handleChangeDept}
-                            input={<OutlinedInput id="select-dept" label="Select Dept" sx={{
-                                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: theme.palette.text.primary,
-                                },
-                                height: "45px",
-                            }}
+                                        />}
+                                        MenuProps={MenuProps}
+                                    >
+                                        <MenuItem value="Sales">Sales</MenuItem>
+                                        <MenuItem value="Operations">Operations</MenuItem>
+                                        <MenuItem value="Services">Services</MenuItem>
+                                    </Select>
 
-                            />}
-                            MenuProps={MenuProps}
-                        >
-                            <MenuItem value="Sales">Sales</MenuItem>
-                            <MenuItem value="Operations">Operations</MenuItem>
-                            <MenuItem value="Services">Services</MenuItem>
-                        </Select>
+                                </FormControl>
+                            </Grid>
+                            {personDept === 'Services' && (
+                                <Grid item xs={6} sm={4} md={2.4}>
+                                    <TextField
+                                        label="Service Id"
+                                        id="outlined-size-small"
+                                        fullWidth
+                                        size="small"
+                                        sx={{
 
-                    </FormControl>
-                    {personDept === 'Services' && (
-                        <TextField
-                            label="Service Id"
-                            id="outlined-size-small"
+                                            '& .MuiInputBase-root': {  // styles for the input itself
+                                                height: 45,  // adjust padding
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                color: theme.palette.text.primary, // Outline color on focus (click)
+                                            },
+                                            '& .MuiOutlinedInput-root': {
+                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                    borderColor: theme.palette.text.primary, // Default outline color
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: theme.palette.text.primary, // Default label color
+                                                '&.Mui-focused': {
+                                                    color: theme.palette.text.primary, // Label color on focus (click)
+                                                },
+                                            },
+                                        }}
+                                        variant="outlined"
+                                    />
+                                </Grid>
+                            )}
 
-                            size="small"
-                            sx={{
-                                m: 1,
-                                '& .MuiInputBase-root': {  // styles for the input itself
-                                    height: 45,  // adjust padding
-                                },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    color: theme.palette.text.primary, // Outline color on focus (click)
-                                },
-                                '& .MuiOutlinedInput-root': {
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: theme.palette.text.primary, // Default outline color
-                                    },
-                                },
-                                '& .MuiInputLabel-root': {
-                                    color: theme.palette.text.primary, // Default label color
-                                    '&.Mui-focused': {
-                                        color: theme.palette.text.primary, // Label color on focus (click)
-                                    },
-                                },
-                            }}
-                            variant="outlined"
-                        />
+                            {/* Select Date */}
+                            <Grid item xs={6} sm={4} md={2.4}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexWrap: 'wrap',
+                                        gap: '0px',
+                                        '@media (min-width: 600px)': {
+                                            flexWrap: 'nowrap',
+                                        },
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Box sx={{
+                                        width: {
+                                            xs: '80%', // Full width on extra-small screens
+                                            sm: 'auto',
+                                        },
+                                        // flexGrow:1
+                                    }}>
+                                        <DatePicker
+                                            value={dates}
+                                            onChange={handleDateChange}
+                                            format="MMMM DD YYYY"
+                                            sort
+                                            plugins={[<DatePanel />]}
+                                            placeholder="Select Date"
+                                            style={{
+                                                margin: "0px",
+                                                height: '45px',
+                                                borderRadius: '4px',
+                                                fontSize: '16px',
+                                                padding: '3px 12px',
+                                                width: '100%', // Ensure it is responsive
+                                                backgroundColor: 'transparent',
+                                                color: theme.palette.text.primary,
+                                                borderWidth: '1px',
+                                                borderStyle: 'solid',
+                                                zIndex: 1000,
+                                            }}
+                                            inputClass="custom-input"
+                                            className="bg-dark"
+                                            animations={[transition()]}
+                                        />
+                                    </Box>
+                                    <IconButton onClick={handleOpen}
+                                        sx={{
+                                            p: 0,
+                                            pl: 0.4,
+                                            // width: 'auto', // Ensure the button's width is appropriate
+                                        }}>
+                                        <EditCalendarIcon sx={{ color: theme.palette.buttonBG.primary }} />
+                                    </IconButton>
+                                    <MultiTrips
+                                        open={open}
+                                        handleClose={handleClose}
+                                        dateCount={dates.length}
+                                        dates={structuredDates}
+                                        getTripPlanList={handleTripPlanList}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Toolbar >
+                    <TripPlan tripPlanList={tripPlanList} handleClearData={handleClearData} />
+                </div >
 
-                    )}
-
-                    {/* Select Date */}
-                    <DatePicker
-                        value={dates}
-                        onChange={handleDateChange}
-                        format="MMMM DD YYYY"
-                        sort
-                        plugins={[
-                            <DatePanel />
-                        ]}
-                        placeholder="Select Date"
-                        style={{ // Adjust the size of the DatePicker
-                            height: "45px",
-                            borderRadius: "4px",
-                            fontSize: "16px",
-                            padding: "3px 12px",
-                            width: "300px",
-                            backgroundColor: "transparent",
-                            color: theme.palette.text.primary,
-                            borderWidth: "1px",
-                            borderStyle: "solid",
-                            zIndex: 1000,
-
-                        }}
-                        inputClass="custom-input"
-                        className="bg-dark"
-                        animations={[transition()]}
-                    />
-                    <IconButton onClick={handleOpen}>
-                        <EditCalendarIcon sx={{ color: theme.palette.buttonBG.primary, }} />
-                    </IconButton>
-                    <MultiTrips open={open} handleClose={handleClose} dateCount={dates.length} dates={structuredDates} getTripPlanList={handleTripPlanList} />
-
-                </Toolbar >
-            </div >
-            <TripPlan tripPlanList={tripPlanList} handleClearData={handleClearData}/>
         </>
     )
 }

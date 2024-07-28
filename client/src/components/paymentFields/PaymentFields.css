@@ -1,7 +1,7 @@
 .paymentFields {
   position: relative;
-
-  z-index: 1;
+  z-index: 1000;
+  
 }
 
 .custom-input {
@@ -14,3 +14,15 @@
   border: 1px solid black;
 
 } */
+.blur-background {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(255, 255, 255);
+  filter: blur(20px);
+  z-index: -1;
+  height: 50px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}

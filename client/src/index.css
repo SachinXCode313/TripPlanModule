@@ -1,5 +1,14 @@
-:root{
+:root {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for Internet Explorer 10+ */
+  -ms-overflow-style: none;
+
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
 }

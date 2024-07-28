@@ -51,16 +51,13 @@ function createData(name, code, population, size) {
   const density = population / size;
   return { name, code, population, size, density };
 }
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-
-
-];
+const customScrollbar = {
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+  '-ms-overflow-style': 'none', // Internet Explorer 10+
+  'scrollbar-width': 'none', // Firefox
+};
 
 
 const TripPlan = ({ tripPlanList, handleClearData }) => {
@@ -156,7 +153,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           //   lg: '60%',  // Set width to 60% for large screens
           //   xl: '50%',  // Set width to 50% for extra-large screens
           // },
-          minHeight: '82vh',
+          minHeight: '650px',
           height: '100%',
           display: 'flex',
           flexDirection: 'column', // Set display to flex
@@ -166,7 +163,8 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           bgcolor: 'primary.main',
           marginTop: theme.spacing(1),
           boxShadow: '10px 1px 15px rgba(0, 0, 0, 0.5)',
-          mx: 'auto'
+          mx: 'auto',
+          ...customScrollbar
         }}
       >
 
@@ -174,7 +172,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           Trip Plan
         </Typography>
 
-        <Paper
+        <Box
           sx={{
             width: {
               xs: '90%', // Set width to 100% for extra-small screens
@@ -183,11 +181,13 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
               lg: '60%',  // Set width to 60% for large screens
               xl: '70%',  // Set width to 50% for extra-large screens
             },
-            overflow: 'hidden',
-            mt: 3
+            maxHeight: 440,
+            height: 440,
+            overflow: 'auto',
+            ...customScrollbar
           }
           }>
-          <TableContainer sx={{ maxHeight: 440 }}>
+          <TableContainer sx={{ maxHeight: 440, ...customScrollbar}}>
             <Table stickyHeader aria-label="sticky table">
               <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
                 <TableRow>
@@ -244,8 +244,8 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           </TableContainer>
 
 
-        </Paper>
-        <Box sx={{ mb:10}}>
+        </Box>
+        <Box sx={{ mt: 2 }}>
           <Button variant="contained"
             onClick={handleSubmit}
             sx={{
