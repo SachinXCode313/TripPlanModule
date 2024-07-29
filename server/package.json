@@ -4,11 +4,11 @@
   "description": "",
   "main": "app.js",
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js "
+    "start": "node app.js "
   },
   "author": "",
   "license": "ISC",
