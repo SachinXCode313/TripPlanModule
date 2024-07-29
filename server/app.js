@@ -18,7 +18,7 @@ app.use(cors({
 }));
 
 app.use('/test', (req, res) => {
-    res.send("Hello Server IS working :)")
+    res.send("Hello Server IS working 1 :)")
 })
 app.use('/api', routers)
 
