@@ -9,8 +9,6 @@ routers.get('/get',getTripPlan)
 
 routers.post('/create',createTripPlan)
 
-
-
 routers.put('/update/:id',updateTripPlan)
 
 routers.get('/getEmployee',getEmployee)

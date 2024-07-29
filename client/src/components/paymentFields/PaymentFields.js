@@ -50,7 +50,7 @@ const PaymentFields = () => {
     // const [openEditDate, setOpenEditDate] = React.useState(false);
 
     useEffect(() => {
-        axios.get(`${BASE_URL}/api/getEmployee`)
+        axios.get(`${BASE_URL}api/getEmployee`)
             .then((res) => {
                 console.log("Received data:", res.data);
                 setEmployeeList(res.data)
