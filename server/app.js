@@ -11,6 +11,9 @@ const port = process.env.PORT ;
 connectDB();
 app.use(express.json())
 app.use(cors())
+app.get('/' , (req,res) => {
+    res.send("Hello Server IS working :)")
+})
 app.use('/api',routers)
 
 app.listen(port, ()=> {
