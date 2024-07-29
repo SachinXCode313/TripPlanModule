@@ -1,12 +1,17 @@
-import { TripPlan,Counter } from "../models/Employees.js";
+import { TripPlan, Counter } from "../models/Employees.js";
 
 const getNextSequenceValue = async (sequenceName) => {
-    const sequence = await Counter.findByIdAndUpdate(
-        sequenceName,
-        { $inc: { sequence_value: 1 } },
-        { new: true, upsert: true }
-    );
-    return sequence.sequence_value;
+    try {
+        const sequence = await Counter.findByIdAndUpdate(
+            sequenceName,
+            { $inc: { sequence_value: 1 } },
+            { new: true, upsert: true }
+        );
+        return sequence.sequence_value;
+    } catch (error) {
+        console.error(`Error getting next sequence value for ${sequenceName}:`, error);
+        throw error;  // rethrow the error if you want to handle it further up the call stack
+    }
 };
 
 

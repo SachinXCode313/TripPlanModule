@@ -6,7 +6,7 @@ const connectDB = async () => {
         await mongoose.connect(process.env.Mongo_Atlas_URL);
         console.log("MongoDB Is Connected")
     }catch(error){
-        console.log(error);s
+        console.log(error);
     }
 }
 

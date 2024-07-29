@@ -4,8 +4,6 @@ import './TripPlan.css'
 import { useTheme } from '@emotion/react'
 import { Button, Snackbar, Alert } from '@mui/material'
 import axios from 'axios';
-
-import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,9 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
-import SubmitButton from './SubmitButton'
 import EditTripModal from '../paymentFields/dateModule/EditTripModal'
-
 
 const columns = [
   { id: 'action', label: 'Action', minWidth: 120 },
@@ -29,23 +25,7 @@ const columns = [
   { id: 'clientName', label: 'Client Name', minWidth: 100 },
   { id: 'purpose', label: 'Purpose', minWidth: 100 },
   { id: 'Remarks', label: 'Remarks', minWidth: 100 },
-  // {
-  //   id: 'population',
-  //   label: 'Population',
-  //   minWidth: 170,
-  //   align: 'right',
-  //   format: (value) => value.toLocaleString('en-US'),
-  // },
-
-  // {
-  //   id: 'density',
-  //   label: 'Density',
-  //   minWidth: 170,
-  //   align: 'right',
-  //   format: (value) => value.toFixed(2),
-  // },
 ];
-
 
 const customScrollbar = {
   '&::-webkit-scrollbar': {
@@ -54,7 +34,6 @@ const customScrollbar = {
   '-ms-overflow-style': 'none', // Internet Explorer 10+
   'scrollbar-width': 'none', // Firefox
 };
-
 
 const TripPlan = ({ tripPlanList, handleClearData }) => {
   const theme = useTheme()
@@ -92,20 +71,16 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
 
   const handleDelete = async (index) => {
     const itemToDelete = tripPlanData[index]; // Assuming tripPlanData is an array and index corresponds to the item
-
-    // Prepare data for the API request
     const data = {
       sr: itemToDelete.sr,
       date: itemToDelete.date,
     };
-
     try {
       const res = await axios.post(`${BASE_URL}/api/deletePlan`,data)
       console.log("data is appended")
     } catch (error) {
       console.error('Error:', error);
     }
-
     setTripPlanData(prevList => {
       const newList = prevList.filter((_, i) => i !== index);
       setSnackbarMessage('Row deleted successfully!');
@@ -117,8 +92,6 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,21 +108,11 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
     setTripPlanData([]);
   };
 
-
-
   return (
     <div >
 
       <Box
         sx={{
-          // width: '100%',
-          // width: {
-          //   xs: '90%', // Set width to 100% for extra-small screens
-          //   sm: '80%',  // Set width to 80% for small screens
-          //   md: '70%',  // Set width to 70% for medium screens
-          //   lg: '60%',  // Set width to 60% for large screens
-          //   xl: '50%',  // Set width to 50% for extra-large screens
-          // },
           minHeight: '650px',
           height: '100%',
           display: 'flex',
@@ -164,11 +127,9 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           ...customScrollbar
         }}
       >
-
         <Typography variant="h3" component="h2" sx={{ fontFamily: 'inherit', mt: 3, fontWeight: "600", textAlign: 'center' }}>
           Trip Plan
         </Typography>
-
         <Box
           sx={{
             width: {
@@ -239,8 +200,6 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
               )}
             </Table>
           </TableContainer>
-
-
         </Box>
         <Box sx={{ mt: 2 }}>
           <Button variant="contained"
@@ -281,5 +240,4 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
     </div>
   )
 }
-
 export default TripPlan

@@ -1,8 +1,23 @@
-import { auth, spreadsheetId, googleSheets } from "../databases/sheet.js";
-import { TripPlan,Counter } from "../models/Employees.js";
+// import { auth, spreadsheetId, googleSheets } from "../databases/sheet.js";
+import { TripPlan, Counter } from "../models/Employees.js";
+
+import initializeGoogleSheets from "../databases/sheet.js";
+
+const initialize = async () => {
+  try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
+    // Now you can use auth, spreadsheetId, and googleSheets
+  } catch (error) {
+    console.error("Failed to initialize Google Sheets:", error);
+  }
+};
+
+initialize();
+
 
 const getLastData = async () => {
   try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
     const getRows = await googleSheets.spreadsheets.values.get({
       auth,
       spreadsheetId,
@@ -34,32 +49,47 @@ const getLastData = async () => {
 };
 
 const getNextSequenceValue = async (sequenceName) => {
-  const sequence = await Counter.findByIdAndUpdate(
+
+  try {
+    const sequence = await Counter.findByIdAndUpdate(
       sequenceName,
       { $inc: { sequence_value: 1 } },
       { new: true, upsert: true }
-  );
-  return sequence.sequence_value;
+    );
+    return sequence.sequence_value;
+  } catch (error) {
+    console.error(`Error getting next sequence value for ${sequenceName}:`, error);
+    throw error;  // Optionally rethrow the error if you want it to be handled by the caller
+  }
 };
+
 
 //Get Users Data
 const getTripPlan = async (req, res) => {
-  const getRows = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Sheet1",
-    // range: "Sheet1!A2:B",
-  });
-  const values = getRows.data.values.slice(1);
+  try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
+    const getRows = await googleSheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId,
+      range: "Sheet1",
+      // range: "Sheet1!A2:B",
+    });
+    const values = getRows.data.values.slice(1);
 
-  res.send(values);
-  console.log(values)
+    res.send(values);
+    console.log(values);
+  } catch (error) {
+    console.error("Error fetching trip plans:", error);
+    res.status(500).send("An error occurred while fetching trip plans.");
+  }
 };
+
 
 
 //Create Users Data
 const createTripPlan = async (req, res) => {
   try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
     const trips = req.body; // Assuming req.body is an array of trip objects
     const planIdForMongo = await getNextSequenceValue('planIdCounter'); // Generate the next planId
 
@@ -101,10 +131,10 @@ const createTripPlan = async (req, res) => {
 
 //Update Users Data
 const updateTripPlan = async (req, res) => {
-  const tripId = parseInt(req.params.sr)
   const { planId, sr, date, country, state, city, clientName, purpose, remarks, deleted } = req.body
 
   try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
     const updatedRow = await googleSheets.spreadsheets.values.update({
       auth,
       spreadsheetId,
@@ -123,20 +153,28 @@ const updateTripPlan = async (req, res) => {
 
 //Get Users Data
 const getEmployee = async (req, res) => {
-  const getRows = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: "Sheet2",
-    // range: "Sheet2!A2:B",
-  });
-  const values = getRows.data.values.slice(1);
+  try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
+    const getRows = await googleSheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId,
+      range: "Sheet2",
+      // range: "Sheet2!A2:B",
+    });
+    const values = getRows.data.values.slice(1);
 
-  res.send(values);
-  console.log(values)
+    res.send(values);
+    console.log(values);
+  } catch (error) {
+    console.error("Error fetching employee data:", error);
+    res.status(500).send("An error occurred while fetching employee data.");
+  }
 };
+
 
 const deletePlan = async (req, res) => {
   try {
+    const { auth, spreadsheetId, googleSheets } = await initializeGoogleSheets();
     const { sr, date } = req.body;
     const srString = sr.toString();
 
@@ -162,7 +200,6 @@ const deletePlan = async (req, res) => {
         break;
       }
     }
-
 
     if (rowIndex === -1) {
       return res.status(404).send('Row not found');
