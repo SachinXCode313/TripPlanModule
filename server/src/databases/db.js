@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 const connectDB = async () => {
     try{
-        await mongoose.connect("mongodb://localhost:27017/tripplan");
+        await mongoose.connect(process.env.Mongo_Atlas_URL);
         console.log("MongoDB Is Connected")
     }catch(error){
         console.log(error);s

@@ -1,11 +1,12 @@
+import dotenv from 'dotenv';
 import express, { Router } from 'express'
 import connectDB from './src/databases/db.js'
-import dotenv from 'dotenv';
 import routers from './src/routes/routes.js';
 import cors from 'cors'
 const app = express()
-const port = 3001;
 dotenv.config()
+
+const port = process.env.PORT ;
 
 connectDB();
 app.use(express.json())

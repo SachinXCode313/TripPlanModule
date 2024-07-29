@@ -10,8 +10,8 @@ function Background() {
     return (
         <>
 
-                <div className="blurryBackground" style={{backgroundImage: theme.palette.bgColor.primary}}>
-
+                <div className="box-pattern" style={{backgroundImage: theme.palette.bgColor.primary}}>
+                    <div className="blur-background"></div>
                 </div>
 
 

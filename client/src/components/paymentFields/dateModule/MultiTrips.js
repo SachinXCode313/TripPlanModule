@@ -127,6 +127,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                     backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 },
             }}
+            
         >
             <Box
                 sx={{
