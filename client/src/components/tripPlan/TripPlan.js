@@ -47,10 +47,6 @@ const columns = [
 ];
 
 
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
 const customScrollbar = {
   '&::-webkit-scrollbar': {
     display: 'none',
@@ -67,7 +63,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(null);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
-  const BaseUrl = process.env.Base_Url
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   React.useEffect(() => {
     setTripPlanData(tripPlanList);
@@ -104,7 +100,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
     };
 
     try {
-      const res = await axios.post(`${BaseUrl}api/deletePlan', ${data}`)
+      const res = await axios.post(`${BASE_URL}/api/deletePlan`,data)
       console.log("data is appended")
     } catch (error) {
       console.error('Error:', error);
@@ -127,7 +123,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${BaseUrl}api/create', ${tripPlanData}`)
+      const res = await axios.post(`${BASE_URL}/api/create`,tripPlanData)
       console.log("data is appended")
     } catch (error) {
       console.error('Error:', error);

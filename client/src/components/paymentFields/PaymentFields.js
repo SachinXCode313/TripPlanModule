@@ -45,12 +45,12 @@ const PaymentFields = () => {
     const [structuredDates, setStructuredDates] = React.useState([])
     const [tripPlanList, setTripPlanList] = React.useState()
     const [employeeList, setEmployeeList] = React.useState([])
-    const BaseUrl = process.env.Base_Url
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
 
     // const [openEditDate, setOpenEditDate] = React.useState(false);
 
     useEffect(() => {
-        axios.get(`${BaseUrl}/api/getEmployee`)
+        axios.get(`${BASE_URL}/api/getEmployee`)
             .then((res) => {
                 console.log("Received data:", res.data);
                 setEmployeeList(res.data)
@@ -133,7 +133,7 @@ const PaymentFields = () => {
         <>
 
                 <div className="paymentFields">
-                    {/* <div className="blur-background"></div>  */}
+                    <div className="blur-background" style={{backgroundImage: theme.palette.blurColor.primary}}></div> 
                     <Toolbar>
                         {/* EmployeeID */}
                         <Grid container sx={{ my: 2, mb: 3 }} spacing={2}>
