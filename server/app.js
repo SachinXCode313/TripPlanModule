@@ -29,7 +29,7 @@ app.options('*', cors(corsConfig));
 
 // Test route to check if the server is running
 app.use('/test', (req, res) => {
-    res.send("Hello Server IS working 10:)");
+    res.send("Hello Server IS working 11:)");
 });
 
 // API routes

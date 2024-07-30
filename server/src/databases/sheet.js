@@ -1,22 +1,17 @@
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
+
 
 dotenv.config();
 
 const initializeGoogleSheets = async () => {
   try {
-    // Resolve the path to the credentials file
-    const credsPath = path.resolve(process.cwd(), process.env.CREADS);
-
-    // Ensure the credentials file exists
-    if (!fs.existsSync(credsPath)) {
-      throw new Error(`Credentials file not found at path: ${credsPath}`);
-    }
 
     const auth = new google.auth.GoogleAuth({
-      keyFile: credsPath,
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      },
       scopes: "https://www.googleapis.com/auth/spreadsheets"
     });
 
