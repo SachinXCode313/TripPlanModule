@@ -8,7 +8,7 @@ dotenv.config()
 
 const port = process.env.PORT;
 const corsConfig = {
-    origin: "http://localhost:3000/", // Allow requests from this origin
+    origin: ['http://localhost:3000'], // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
@@ -19,7 +19,7 @@ app.options("",cors(corsConfig))
 app.use(cors(corsConfig));
 
 app.use('/test', (req, res) => {
-    res.send("Hello Server IS working 6:)")
+    res.send("Hello Server IS working 7:)")
 })
 app.use('/api', routers)
 
