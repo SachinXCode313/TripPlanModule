@@ -19,7 +19,7 @@ app.options("",cors(corsConfig))
 app.use(cors(corsConfig));
 
 app.use('/test', (req, res) => {
-    res.send("Hello Server IS working 5:)")
+    res.send("Hello Server IS working 6:)")
 })
 app.use('/api', routers)
 
