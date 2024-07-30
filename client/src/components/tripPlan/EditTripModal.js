@@ -124,12 +124,12 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
         }));
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+
+    const handleInputChange = (name) => (event) => {
+        setFormData({
+            ...formData,
+            [name]: event.target.value,
+        });
     };
 
     const handleSubmit = (e) => {
@@ -163,7 +163,13 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
             <Box
                 sx={{
                     mt: 5,
-                    width: 600,
+                    width: {
+                        xs: '90%', // Set width to 100% for extra-small screens
+                        sm: '60%',  // Set width to 80% for small screens
+                        md: '50%',  // Set width to 70% for medium screens
+                        lg: '40%',  // Set width to 60% for large screens
+                        xl: '35%',  // Set width to 50% for extra-large screens
+                    },
                     height: 320,
                     bgcolor: 'background.paper',
                     border: '2px solid #3d3d3d55',
@@ -180,7 +186,7 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
-                    <Box sx={{ flexGrow: 1, p: 2, mt: 1 }}>
+                    <Box sx={{ flexGrow: 1, p: 1, mt: 1 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>
                                 <Autocomplete
@@ -291,16 +297,17 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                                 />
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Client Name"
                                         name="clientName"
                                         value={formData.clientName}
                                         onChange={handleInputChange}
                                         size="small"
+                                        fullWidth
                                         sx={{
                                             '& .MuiInputBase-root': {
                                                 height: 45,
+                                                width: '100%'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                 color: theme.palette.text.primary,
@@ -319,19 +326,19 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                                         }}
                                         variant="outlined"
                                     />
-                                </FormControl>
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Purpose"
                                         name="purpose"
                                         value={formData.purpose}
                                         onChange={handleInputChange}
                                         size="small"
+                                        fullWidth
                                         sx={{
                                             '& .MuiInputBase-root': {
                                                 height: 45,
+                                                width: '100%'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                 color: theme.palette.text.primary,
@@ -350,19 +357,19 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                                         }}
                                         variant="outlined"
                                     />
-                                </FormControl>
                             </Grid>
                             <Grid item xs={6}>
-                                <FormControl sx={{ width: 270 }} size="small">
                                     <TextField
                                         label="Remarks"
                                         name="remarks"
                                         value={formData.remarks}
                                         onChange={handleInputChange}
                                         size="small"
+                                        fullWidth
                                         sx={{
                                             '& .MuiInputBase-root': {
                                                 height: 45,
+                                                width: '100%'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                 color: theme.palette.text.primary,
@@ -381,14 +388,12 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                                         }}
                                         variant="outlined"
                                     />
-                                </FormControl>
                             </Grid>
                         </Grid>
                     </Box>
+                    </form>
                     <Box sx={{
-                        mb: 2, ml: 25, display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                        mt:2
                     }}>
                         <Button
                             variant="contained"
@@ -420,7 +425,6 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
                             Cancel
                         </Button>
                     </Box>
-                </form>
             </Box>
         </Modal>
     );
