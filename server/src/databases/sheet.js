@@ -6,7 +6,7 @@ dotenv.config();
 const initializeGoogleSheets = async () => {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: process.env.CREADS,
+      keyFile: "creads.json",
       scopes: "https://www.googleapis.com/auth/spreadsheets"
     });
     
