@@ -7,15 +7,16 @@ const app = express()
 dotenv.config()
 
 const port = process.env.PORT;
-
-connectDB();
-app.use(express.json())
-app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests from this origin
+const corsConfig = {
+    origin: "*", // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-}));
+}
+connectDB();
+app.use(express.json())
+app.options("",cors(corsConfig))
+app.use(cors(corsConfig));
 
 app.use('/test', (req, res) => {
     res.send("Hello Server IS working 2:)")
