@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT;
 
 const corsConfig = {
-    origin: 'http://localhost:3000', // Allow requests from this origin
+    origin: ['http://localhost:3000' , 'https://trip-plan-one.vercel.app'], // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
