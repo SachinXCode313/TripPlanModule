@@ -18,7 +18,7 @@ const columns = [
   { id: 'action', label: 'Action', minWidth: 120 },
   { id: 'sr', label: 'Sr.', minWidth: 50 },
   { id: 'date', label: 'Date', minWidth: 110 },
-  { id: 'day', label: 'Day', minWidth: 60 },
+  { id: 'day', label: 'Day', minWidth: 50 },
   { id: 'country', label: 'Country', minWidth: 120 },
   { id: 'state', label: 'State', minWidth: 100 },
   { id: 'city', label: 'City', minWidth: 100 },
@@ -60,7 +60,6 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
 
   const handleEditTripPlanList = (formData, index) => {
     setTripPlanData(prevList => {
-      // Create a new list with updated data
       const updatedList = prevList.map((trip, i) =>
         i === index ? { ...trip, ...formData } : trip
       );
@@ -117,7 +116,6 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column', // Set display to flex
-          // justifyContent: 'center', // Center horizontally
           alignItems: 'center', // Center vertically
           borderRadius: 1,
           bgcolor: 'primary.main',
@@ -142,6 +140,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
             maxHeight: 440,
             height: 440,
             overflow: 'auto',
+            mt:3,
             ...customScrollbar
           }
           }>
@@ -154,6 +153,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
                       key={column.id}
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
+                      sx={{p:1.2,fontWeight:1000}}
                     >
                       {column.label}
                     </TableCell>

@@ -27,7 +27,7 @@
   /* box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; */
 }
 
-@media (max-width:430px) {
+@media (max-width:900px) {
   .blur-background{
     height: 120px;
   }
