@@ -8,9 +8,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useTheme } from '@emotion/react';
 import { City, Country, State } from 'country-state-city';
+import { debounce } from 'lodash';
 
-
-const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
+const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     const theme = useTheme();
     const [countries, setCountries] = React.useState([]);
     const [states, setStates] = React.useState([]);
@@ -125,9 +125,9 @@ const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
     const handleCancel = () => {
         setFormData({
             date,
-            country: null,
-            state: null,
-            city: null,
+            country: '',
+            state: '',
+            city: '',
             clientName: '',
             purpose: '',
             remarks: '',
@@ -135,6 +135,10 @@ const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
             stateCode: '',})
         handleClose();
     };
+
+    const debouncedHandleCountryChange = debounce(handleCountryChange, 300);
+    const debouncedHandleStateChange = debounce(handleStateChange, 300);
+    const debouncedHandleCityChange = debounce(handleCityChange, 300);
 
     return (
         <Modal
@@ -185,7 +189,7 @@ const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
                                     options={countries}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={countries.find(c => c.name === formData.country) || null}
-                                    onChange={handleCountryChange}
+                                    onChange={debouncedHandleCountryChange}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -220,7 +224,7 @@ const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
                                     options={states}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={states.find(s => s.name === formData.state) || null}
-                                    onChange={handleStateChange}
+                                    onChange={debouncedHandleStateChange}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -255,7 +259,7 @@ const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
                                     options={cities}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={cities.find(c => c.name === formData.city) || null}
-                                    onChange={handleCityChange}
+                                    onChange={debouncedHandleCityChange}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -383,7 +387,7 @@ const CreatePlanModal = ({ open, handleClose,date, day, setTripPlanList }) => {
                     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
                         <Button
                             variant="contained"
-                            onClick={handleSubmit}
+                            type="submit"
                             sx={{
                                 color: theme.palette.buttonText.primary,
                                 backgroundColor: theme.palette.buttonBG.primary,
