@@ -75,7 +75,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
       date: itemToDelete.date,
     };
     try {
-      const res = await axios.post(`${BASE_URL}/api/deletePlan`,data)
+      const res = await axios.post(`${BASE_URL}/api/deletePlan`, data)
       console.log("data is appended")
     } catch (error) {
       console.error('Error:', error);
@@ -95,7 +95,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${BASE_URL}/api/create`,tripPlanData)
+      const res = await axios.post(`${BASE_URL}/api/create`, tripPlanData)
       console.log("data is appended")
     } catch (error) {
       console.error('Error:', error);
@@ -140,11 +140,11 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
             maxHeight: 440,
             height: 440,
             overflow: 'auto',
-            mt:3,
+            mt: 3,
             ...customScrollbar
           }
           }>
-          <TableContainer sx={{ maxHeight: 440, ...customScrollbar}}>
+          <TableContainer sx={{ maxHeight: 440, ...customScrollbar }}>
             <Table stickyHeader aria-label="sticky table">
               <thead class="MuiTableHead-root css-1wbz3t9" sx={"background-color: black;"}>
                 <TableRow>
@@ -153,7 +153,7 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
                       key={column.id}
                       align={column.align}
                       style={{ minWidth: column.minWidth }}
-                      sx={{p:1.2,fontWeight:1000}}
+                      sx={{ p: 1.2, fontWeight: 1000 }}
                     >
                       {column.label}
                     </TableCell>
@@ -228,8 +228,8 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
           open={snackbarOpen}
           autoHideDuration={3000}
           onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          sx={{ mt: 20 }}  // Positioning the Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          sx={{ mt: 2 }}  // Positioning the Snackbar
         >
           <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
             {snackbarMessage}

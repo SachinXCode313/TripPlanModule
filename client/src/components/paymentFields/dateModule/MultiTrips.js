@@ -22,6 +22,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import { useTheme } from '@emotion/react';
 import EditTripModal from './EditTripModal';
+import { Snackbar, Alert } from '@mui/material'
+import axios from 'axios';
 // import EditTripModal from '../paymentFields/dateModule/EditTripModal'
 
 const columns = [
@@ -47,20 +49,21 @@ const customScrollbar = {
 const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) => {
     const theme = useTheme();
 
-    const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [EditModalOpen, setEditModalOpen] = useState(false);
     const [openDate, setOpenDate] = useState();
     const [openDay, setOpenDay] = useState();
     const [expanded, setExpanded] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState('');
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 
     const [tripPlanList, setTripPlanList] = useState([]);
 
     const handleCreateModalOpen = (day, date, index) => {
         setCreateModalOpen(true);
-        setOpenDropdownIndex(index);
         setOpenDay(day);
         setOpenDate(date);
         setExpanded(index);
@@ -72,7 +75,6 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
 
     const handleEditModalOpen = (day, date, index) => {
         setEditModalOpen(true);
-        setOpenDropdownIndex(index);
         setOpenDay(day);
         setOpenDate(date);
         setExpanded(index);
@@ -110,6 +112,29 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
         });
     };
 
+    const handleDelete = async (index) => {
+        const itemToDelete = tripPlanList[index]; // Assuming tripPlanData is an array and index corresponds to the item
+        const data = {
+            sr: itemToDelete.sr,
+            date: itemToDelete.date,
+        };
+        try {
+            const res = await axios.post(`${BASE_URL}/api/deletePlan`, data)
+            console.log("data is appended")
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        setTripPlanList(prevList => {
+            const newList = prevList.filter((_, i) => i !== index);
+            setSnackbarMessage('Row deleted successfully!');
+            setSnackbarOpen(true);
+            return newList;
+        });
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
 
     const handleSave = () => {
         getTripPlanList(tripPlanList);
@@ -128,7 +153,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                     backgroundColor: 'rgba(0, 0, 0, 0.4)',
                 },
             }}
-            
+
         >
             <Box
                 sx={{
@@ -215,7 +240,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                             <AccordionDetails
                                 sx={{ p: 1 }}>
                                 <Box sx={{ p: 0, pt: 0 }}>
-                                    <TableContainer component={Paper} sx={{...customScrollbar}}>
+                                    <TableContainer component={Paper} sx={{ ...customScrollbar }}>
                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                             <thead sx={{ backgroundColor: theme.palette.primary.main, }}>
                                                 <TableRow>
@@ -254,7 +279,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                                                                     setTripPlanList={handleEditTripPlanList}
                                                                     index={selectedIndex}
                                                                 />
-                                                                <IconButton>
+                                                                <IconButton onClick={() => handleDelete(index)}>
                                                                     <DeleteIcon sx={{ color: theme.palette.buttonBG.primary }} />
                                                                 </IconButton>
                                                             </TableCell>
@@ -304,7 +329,17 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                             },
                         }}>Cancel</Button>
                 </Box>
-
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={3000}
+                    onClose={handleSnackbarClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    sx={{ mt: 2 }}  // Positioning the Snackbar
+                >
+                    <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
             </Box>
         </Modal>
     );
