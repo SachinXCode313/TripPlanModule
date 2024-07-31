@@ -37,34 +37,34 @@ function App() {
       // bgColor: {
       //   primary: toggleDark ? '  linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px), linear- gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px)' : 'linear - gradient(90deg, #0003 1px, #0000 0), linear- gradient(180deg, #0003 1px, #0000 0)',
       // },
-    bgColor: {
-      primary: toggleDark ? 'linear-gradient(90deg, #c8c8c833 1px, #fff0 0),linear-gradient(180deg, #c8c8c899 1px, #fff0 0)' : 'linear-gradient(90deg, #0003 1px, #0000 0), linear-gradient(180deg, #0003 1px, #0000 0)',
-    },
-    blurColor:{
-      primary: toggleDark ? 'rgba(255, 255, 255, 0.287)' : 'rgba(0, 0, 0, 0.287)',
-    },
-    border: {
-    primary: toggleDark ? '#C4C4C4' : '#C4C4C4',
-  },
-    borderHover: {
-    primary: toggleDark ? 'black' : 'white',
-  },
+      bgColor: {
+        primary: toggleDark ? 'linear-gradient(90deg, #c8c8c833 1px, #fff0 0),linear-gradient(180deg, #c8c8c899 1px, #fff0 0)' : 'linear-gradient(90deg, #0003 1px, #0000 0), linear-gradient(180deg, #0003 1px, #0000 0)',
+      },
+      blurColor: {
+        primary: toggleDark ? 'rgba(255, 255, 255, 0.287)' : 'rgba(0, 0, 0, 0.287)',
+      },
+      border: {
+        primary: toggleDark ? '#C4C4C4' : '#C4C4C4',
+      },
+      borderHover: {
+        primary: toggleDark ? 'black' : 'white',
+      },
     },
   })
 
 
-return (
-  <>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Background />
-      <Navbar toggleDark={toggleDark} setToggleDark={setToggleDark} />
-      <PaymentFields />
-    </ThemeProvider>
+  return (
+    <>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Background />
+        <Navbar toggleDark={toggleDark} setToggleDark={setToggleDark} />
+        <PaymentFields />
+      </ThemeProvider>
 
 
-  </>
-);
+    </>
+  );
 }
 
 export default App;
