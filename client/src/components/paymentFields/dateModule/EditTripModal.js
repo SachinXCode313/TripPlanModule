@@ -26,6 +26,8 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
         stateCode: '',
     });
 
+    console.log("edit-re-render")
+
     React.useEffect(() => {
         const fetchCountries = async () => {
             try {
@@ -417,4 +419,4 @@ const EditTripModal = ({ open, handleClose, initialData, setTripPlanList, index 
     );
 };
 
-export default EditTripModal;
+export default React.memo(EditTripModal);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import {
     Typography,
     Modal,
@@ -69,9 +69,9 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
         setExpanded(index);
     };
 
-    const handleCreateModalClose = () => {
+    const handleCreateModalClose = useCallback(() => {
         setCreateModalOpen(false);
-    };
+    },[]);
 
     const handleEditModalOpen = (day, date, index) => {
         setEditModalOpen(true);
@@ -86,20 +86,17 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
         setEditModalOpen(false);
     };
 
-    const handleTripPlanList = (formData) => {
+    const handleTripPlanList = useCallback((formData) => {
         // Generate sr number based on existing trip plans for the specific date
         const tripPlansForDate = tripPlanList.filter(trip => trip.date === formData.date);
         const sr = tripPlansForDate.length + 1;
 
-        // Add sr to formData
         const updatedFormData = { ...formData, sr, day: formData.day };
 
         setTripPlanList(prevList => [...prevList, updatedFormData]);
         console.log(tripPlanList);
 
-        // setTripPlanList(prevList => [...prevList, formData]);
-        // console.log(tripPlanList);
-    };
+    },[]);
 
     const handleEditTripPlanList = (formData, index) => {
         setTripPlanList(prevList => {
@@ -229,13 +226,7 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
                                 >
                                     <AddCircleOutlineIcon />
                                 </IconButton>
-                                <CreateTripModal
-                                    open={createModalOpen}
-                                    handleClose={handleCreateModalClose}
-                                    day={openDay}
-                                    date={openDate}
-                                    setTripPlanList={handleTripPlanList}
-                                />
+
                             </AccordionSummary>
                             <AccordionDetails
                                 sx={{ p: 1 }}>
@@ -297,9 +288,17 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
 
                                         </Table>
                                     </TableContainer>
+                                    <CreateTripModal
+                                        open={createModalOpen}
+                                        handleClose={handleCreateModalClose}
+                                        day={openDay}
+                                        date={openDate}
+                                        setTripPlanList={handleTripPlanList}
+                                    />
                                 </Box>
                             </AccordionDetails>
                         </Accordion>
+
 
                     ))}
 
@@ -345,4 +344,4 @@ const MultiTrips = ({ open, handleClose, dateCount, dates, getTripPlanList }) =>
     );
 };
 
-export default MultiTrips;
+export default memo(MultiTrips);

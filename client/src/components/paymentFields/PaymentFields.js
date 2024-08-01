@@ -15,8 +15,6 @@ import './PaymentFields.css'
 import MultiTrips from "./dateModule/MultiTrips";
 import TripPlan from "../tripPlan/TripPlan";
 
-
-
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -27,11 +25,6 @@ const MenuProps = {
         },
     },
 };
-
-
-
-
-
 
 
 const PaymentFields = () => {
@@ -45,6 +38,7 @@ const PaymentFields = () => {
     const [structuredDates, setStructuredDates] = React.useState([])
     const [tripPlanList, setTripPlanList] = React.useState()
     const [employeeList, setEmployeeList] = React.useState([])
+    const multiTripsRef = React.useRef();
     const BASE_URL = process.env.REACT_APP_BASE_URL;
 
     // const [openEditDate, setOpenEditDate] = React.useState(false);
@@ -52,7 +46,6 @@ const PaymentFields = () => {
     useEffect(() => {
         axios.get(`${BASE_URL}/api/getEmployee`)
             .then((res) => {
-                console.log("Received data:", res.data);
                 setEmployeeList(res.data)
             })
             .catch((err) => {
@@ -69,14 +62,11 @@ const PaymentFields = () => {
         }));
         setStructuredDates(structuredDates);
         setOpen(true);
-        console.log(structuredDates);
-        console.log("EmployeeList: ", employeeList)
     }
     const handleClose = () => setOpen(false);
 
     const handleDateChange = (selectedDates) => {
         setDates(selectedDates);
-        console.log('Selected dates:', selectedDates);
     };
 
     const handleChangePerson = (event) => {
@@ -120,7 +110,11 @@ const PaymentFields = () => {
         setPersonName([])
         setPersonType('')
         setPersonDept('')
+        setTripPlanList([])
         setDates([])
+        if (multiTripsRef.current) {
+            multiTripsRef.current.resetTripPlanList();
+        }
     }
 
 
@@ -168,7 +162,7 @@ const PaymentFields = () => {
                                         height: "45px",
                                     }}
                                     />}
-                                    
+
                                 >
                                     {employeeList.map(([id, name]) => (
                                         <MenuItem key={id} value={`${id}-${name}`} >
@@ -293,9 +287,9 @@ const PaymentFields = () => {
                             >
                                 <Box sx={{
                                     width: {
-                                        xs: '80%', // Full width on extra-small screens
+                                        xs: '80%', // Set width to 100% for extra-small screens
                                         sm: 'auto',
-                                    },
+                                    }
                                     // flexGrow:1
                                 }}>
                                     <DatePicker
@@ -311,12 +305,11 @@ const PaymentFields = () => {
                                             borderRadius: '4px',
                                             fontSize: '16px',
                                             padding: '3px 12px',
-                                            width: '100%', // Ensure it is responsive
+                                            width: '100%',
                                             backgroundColor: 'transparent',
                                             color: theme.palette.text.primary,
                                             borderWidth: '1px',
                                             borderStyle: 'solid',
-                                            zIndex: 1000,
                                         }}
                                         inputClass="custom-input"
                                         className="bg-dark"
@@ -337,6 +330,7 @@ const PaymentFields = () => {
                                     dateCount={dates.length}
                                     dates={structuredDates}
                                     getTripPlanList={handleTripPlanList}
+                                    ref={multiTripsRef}
                                 />
                             </Box>
                         </Grid>

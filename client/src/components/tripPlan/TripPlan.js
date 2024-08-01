@@ -97,6 +97,8 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
     try {
       const res = await axios.post(`${BASE_URL}/api/create`, tripPlanData)
       console.log("data is appended")
+      handleClearData();
+      setTripPlanData([]);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -113,7 +115,9 @@ const TripPlan = ({ tripPlanList, handleClearData }) => {
       <Box
         sx={{
           minHeight: '650px',
+          // position: 'fixed',
           height: '100%',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column', // Set display to flex
           alignItems: 'center', // Center vertically

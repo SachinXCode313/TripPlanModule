@@ -27,11 +27,13 @@ const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         stateCode: '',
     });
 
+    console.log("re-render")
     React.useEffect(() => {
         const fetchCountries = async () => {
             try {
                 const countries = await Country.getAllCountries();
                 setCountries(countries);
+                console.log("country Clicked")
             } catch (err) {
                 console.error(err);
             }
@@ -136,9 +138,6 @@ const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
         handleClose();
     };
 
-    const debouncedHandleCountryChange = debounce(handleCountryChange, 300);
-    const debouncedHandleStateChange = debounce(handleStateChange, 300);
-    const debouncedHandleCityChange = debounce(handleCityChange, 300);
 
     return (
         <Modal
@@ -189,7 +188,7 @@ const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     options={countries}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={countries.find(c => c.name === formData.country) || null}
-                                    onChange={debouncedHandleCountryChange}
+                                    onChange={handleCountryChange}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -224,7 +223,7 @@ const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     options={states}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={states.find(s => s.name === formData.state) || null}
-                                    onChange={debouncedHandleStateChange}
+                                    onChange={handleStateChange}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -259,7 +258,7 @@ const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
                                     options={cities}
                                     getOptionLabel={(option) => option.name || ''}
                                     value={cities.find(c => c.name === formData.city) || null}
-                                    onChange={debouncedHandleCityChange}
+                                    onChange={handleCityChange}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -421,4 +420,4 @@ const CreatePlanModal = ({ open, handleClose, date, day, setTripPlanList }) => {
     );
 };
 
-export default CreatePlanModal;
+export default React.memo(CreatePlanModal);
